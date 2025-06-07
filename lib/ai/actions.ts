@@ -13,6 +13,8 @@ import {
 
 const simpleGenerationSchema = z.object({
 	image: z.string(),
+	gender: z.enum(['male', 'female']),
+	background: z.enum(['neutral', 'office', 'city', 'nature']),
 });
 
 // const uploadImage = async () =>
@@ -23,12 +25,13 @@ export const generateHeadshot = validatedAction(
 	async (data, formData) => {
 		console.log('data', data);
 		console.log('formData', formData);
-		const { image } = data;
+		const { image, gender, background } = data;
 		// const imageUrl = await uploadImage();
 		console.log('imageUrl', image);
 
 		const headshot = await generateSimpleHeadshot({
-			gender: 'male',
+			gender,
+			background,
 			imageUrl: image,
 		});
 		console.log('headshot', headshot);

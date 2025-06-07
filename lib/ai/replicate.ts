@@ -7,6 +7,7 @@ export const replicate = new Replicate({
 
 type GenerateSimpleHeadshotParams = {
 	gender: 'male' | 'female';
+	background: 'neutral' | 'office' | 'city' | 'nature';
 	imageUrl: string;
 	aspectRatio?: '1:1';
 };
@@ -14,10 +15,11 @@ type GenerateSimpleHeadshotParams = {
 export const generateSimpleHeadshot = async (
 	params: GenerateSimpleHeadshotParams,
 ) => {
-	return 'https://replicate.delivery/xezq/5u0H876erIyqaKRL0sPEBeHUc3XV0EwBRQs66xV3sfbkZ1mpA/tmp0osj78xw.png';
-	const { gender, imageUrl, aspectRatio = '1:1' } = params;
+	return 'https://www.denverheadshotco.com/wp-content/uploads/2024/08/Top-17-Professional-Headshot-Examples-For-Men-Women-2.png';
+	const { gender, background, imageUrl, aspectRatio = '1:1' } = params;
 	const input = {
 		gender,
+		background,
 		input_image: imageUrl,
 		aspect_ratio: aspectRatio,
 	};

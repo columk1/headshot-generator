@@ -1,25 +1,90 @@
-# Next.js SaaS Starter
+# Aragon.ai
 
-This is a starter template for building a SaaS application using **Next.js** with support for authentication, Stripe integration for payments, and a dashboard for logged-in users.
+**Headshot AI** is a leading AI-powered headshot generator that transforms your selfies into studio-quality portraits in minutes. Trusted by over 1.3 million professionals and teams, Aragon.ai offers a fast, affordable, and customizable solution for obtaining professional headshots without the need for traditional photoshoots.
 
-**Demo: [https://next-saas-start.vercel.app/](https://next-saas-start.vercel.app/)**
+---
+
+## Overview
+
+Headshot AI simplifies the process of obtaining professional headshots by leveraging advanced AI algorithms. Users can upload a few photos, select preferred styles, and receive a set of high-quality headshots suitable for various professional and personal uses.
+
+---
 
 ## Features
 
-- Marketing landing page (`/`) with animated Terminal element
-- Pricing page (`/pricing`) which connects to Stripe Checkout
-- Dashboard pages with CRUD operations on users/teams
-- Basic RBAC with Owner and Member roles
-- Subscription management with Stripe Customer Portal
-- Email/password authentication with JWTs stored to cookies
-- Global middleware to protect logged-in routes
-- Local middleware to protect Server Actions or validate Zod schemas
-- Activity logging system for any user events
+- 🎯 **AI-Powered Headshot Generation**: Upload selfies and receive 5 high-quality, AI-generated headshots in various styles and settings.
+
+- 🎨 **Customization Options**: Choose from a wide range of outfits, backgrounds, and poses to match your personal or professional brand.
+
+- ⏱️ **Fast Turnaround**: Receive your AI-generated headshots within minutes, saving time compared to traditional photoshoots.
+
+- 🛡️ **Privacy and Security**: Headshot AI prioritizes user privacy, ensuring that your data is handled with the utmost care.
+
+## User Flows
+
+### 1. **Sign Up / Log In**
+
+- Sign up using your email address or log in to your existing account.
+
+### 2. **Upload Photos**
+
+- Upload a single high-quality selfie. Ensure good lighting and clear facial visibility for optimal results.
+
+### 3. **Select Styles**
+
+- Choose your preferred attire and backgrounds from a curated selection to match your desired look.
+
+### 4. **AI Processing**
+
+- Our AI model processes your photos to generate a personalized set of headshots.
+
+### 5. **Review**
+
+- Browse through your generated headshots.
+
+### 6. **Download and Use**
+
+- Download your favorite headshots in high resolution.
+- Use them for professional profiles, resumes, social media, and more.
+
+---
+
+## Getting Started
+
+1. **Visit Headshot.ai**: Navigate to https://headshot.ai.
+
+2. **Create an Account**: Sign up with your email address.
+
+3. **Upload Photos**: Provide at least 6 high-quality selfies.
+
+4. **Customize**: Select your preferred styles and backgrounds.
+
+5. **Generate Headshots**: Let the AI process your photos.
+
+6. **Download**: Access and download your new professional headshots.
+
+---
+
+## Pricing
+
+Headshot AI offers various pricing tiers to accommodate different needs:
+
+- **Basic Package**: Starting at $10, includes a set of AI-generated headshots.
+
+For detailed pricing information, visit the [Pricing Page](https://www.headshot.ai/pricing).
+
+---
+
+## License
+
+All rights reserved by Headshot AI. Unauthorized use or distribution of the platform's content and services is prohibited.
+
+
 
 ## Tech Stack
 
 - **Framework**: [Next.js](https://nextjs.org/)
-- **Database**: [Postgres](https://www.postgresql.org/)
+- **Database**: [SQLite](https://www.sqlite.org/)
 - **ORM**: [Drizzle](https://orm.drizzle.team/)
 - **Payments**: [Stripe](https://stripe.com/)
 - **UI Library**: [shadcn/ui](https://ui.shadcn.com/)
@@ -101,11 +166,3 @@ In your Vercel project settings (or during deployment), add all the necessary en
 3. `STRIPE_WEBHOOK_SECRET`: Use the webhook secret from the production webhook you created in step 1.
 4. `POSTGRES_URL`: Set this to your production database URL.
 5. `AUTH_SECRET`: Set this to a random string. `openssl rand -base64 32` will generate one.
-
-## Other Templates
-
-While this template is intentionally minimal and to be used as a learning resource, there are other paid versions in the community which are more full-featured:
-
-- https://achromatic.dev
-- https://shipfa.st
-- https://makerkit.dev

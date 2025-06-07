@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { LoaderCircle } from 'lucide-react';
 import { useActionState, useRef, useState } from 'react';
 import { deleteAccount } from '@/app/(login)/actions';
 import type { User } from '@/lib/db/schema';
@@ -15,6 +16,15 @@ import { imageSchema, type ImageData } from '@/lib/schemas/zod.schema';
 import { signUploadForm } from '@/lib/cloudinary';
 import { IMG_UPLOAD_URL } from '@/lib/constants';
 import { z } from 'zod';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+// Background options with thumbnail URLs
+const backgroundOptions = [
+  { id: 'neutral', label: 'Neutral', thumbnail: '/backgrounds/neutral.jpg' },
+  { id: 'office', label: 'Office', thumbnail: '/backgrounds/office.jpg' },
+  { id: 'city', label: 'City', thumbnail: '/backgrounds/city.jpg' },
+  { id: 'nature', label: 'Nature', thumbnail: '/backgrounds/nature.jpg' },
+];
 
 type Generation = {
   id: number;
@@ -33,6 +43,10 @@ export function Dashboard({ initialGenerations }: { initialGenerations: Generati
   const [image, setImage] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
+  // Using default values for the radio groups
+  const defaultGender = 'male';
+  const defaultBackground = 'neutral';
+
   const [generateState, generateAction, isGeneratePending] = useActionState<
     GenerationState,
     FormData
@@ -101,74 +115,185 @@ export function Dashboard({ initialGenerations }: { initialGenerations: Generati
 
   return (
     <section className="flex-1 p-4 lg:p-8">
-      {/* <h1 className="text-lg lg:text-2xl font-medium mb-6">Generate</h1> */}
-      {/* Card to start a new generation */}
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Start a New Generation</CardTitle>
+          <CardTitle>Create Your Professional Headshot</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Upload your photo and select from the options below.
-          </p>
-          <form action={generateAction}>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="image">Picture</Label>
-              <div className="flex w-full max-w-md items-center space-x-2">
-                <Input ref={fileInputRef} id="image" type="file" accept="image/*" className='border-border border' onChange={handleFileChange} />
-                <Input type="hidden" name="image" value={imageUrl} />
-                <Button type='submit' variant="default" disabled={!imageUrl || isGeneratePending}>
-                  Generate Headshots
+          <form action={generateAction} className="space-y-6">
+            {/* Image Upload Section */}
+            <div className="space-y-4">
+              <div>
+                <Label className="block text-sm font-medium mb-2">Upload Your Photo</Label>
+                <div className="flex items-center gap-4">
+                  <div className="relative h-32 w-32 rounded-md border-2 border-dashed border-gray-300 dark:border-gray-700 overflow-hidden">
+                    {image ? (
+                      <img
+                        src={image}
+                        alt="Preview"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Preview</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2 flex flex-col items-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleUploadButtonClick}
+                      disabled={uploading}
+                      className="gap-2 min-w-28"
+                    >
+                      {uploading ? (
+                        <LoaderCircle className="size-4 animate-spin text-white" />
+                      ) : 'Choose File'}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      {image ? 'Image selected' : 'JPG or PNG, max 10MB'}
+                    </p>
+                    <Input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Input type="hidden" name="image" value={imageUrl} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Gender Selection */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium block mb-2">Gender</Label>
+                <RadioGroup
+                  name="gender"
+                  defaultValue={defaultGender}
+                  className="flex gap-3 w-fit"
+                >
+                  <div>
+                    <RadioGroupItem
+                      value="male"
+                      id="male"
+                      className="peer sr-only"
+                    />
+                    <Label
+                      htmlFor="male"
+                      className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                    >
+                      <span className="font-medium">Male</span>
+                    </Label>
+                  </div>
+                  <div>
+                    <RadioGroupItem
+                      value="female"
+                      id="female"
+                      className="peer sr-only"
+                    />
+                    <Label
+                      htmlFor="female"
+                      className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                    >
+                      <span className="font-medium">Female</span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Background Selection */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium block mb-2">Background Style</Label>
+                <RadioGroup
+                  name="background"
+                  defaultValue={defaultBackground}
+                  className="grid grid-cols-4 gap-3 w-full"
+                >
+                  {backgroundOptions.map((option) => (
+                    <div key={option.id}>
+                      <RadioGroupItem
+                        value={option.id}
+                        id={option.id}
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor={option.id}
+                        className="flex flex-col items-center justify-between rounded-lg border border-muted bg-popover p-2 hover:bg-black/25 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full"
+                      >
+                        <div className="w-full aspect-square bg-muted rounded-lg overflow-hidden">
+                          <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center text-xs text-muted-foreground">
+                            {option.label}
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium">{option.label}</span>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  disabled={!imageUrl || uploading || isGeneratePending}
+                  className="w-full"
+                >
+                  {isGeneratePending ? 'Generating...' : 'Generate Headshots'}
                 </Button>
               </div>
             </div>
           </form>
         </CardContent>
-      </Card >
+      </Card>
 
-      <h2 className="text-xl font-medium mb-4">Current Generation</h2>
-      {generateState.error && <p className="text-red-500">{generateState.error}</p>}
-      {generateState.imageUrl && <img src={generateState.imageUrl} alt="Current Generation" className="w-full max-h-48 object-contain rounded" />}
+      <div className="space-y-4">
+        <h2 className="text-xl font-medium mb-4">Current Generation</h2>
+        {generateState.error && <p className="text-red-500">{generateState.error}</p>}
+        {generateState.imageUrl && <img src={generateState.imageUrl} alt="Current Generation" className="max-h-48 object-contain rounded" />}
 
-      <h2 className="text-xl font-medium mb-4">Your Previous Generations</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      {
-        generations.length === 0 && (
-          <p>No generations found. Start a new one!</p>
-        )
-      }
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {generations.map((gen) => (
-          <Card key={gen.id}>
-            <CardHeader>
-              <CardTitle>Generation #{gen.id}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <img
-                // src={gen.storagePath}
-                src={gen.imageUrl}
-                alt={`Generation ${gen.id}`}
-                className="w-full h-48 object-cover rounded"
-              />
-              <p className="mt-2 text-sm text-muted-foreground">
-                {new Date(gen.createdAt * 1000).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                })}
-              </p>
-              <Button
-                variant="outline"
-                className="mt-2"
-                onClick={() => window.open(gen.storagePath, '_blank')}
-              >
-                View / Download
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+        <h2 className="text-xl font-medium mb-4">Your Previous Generations</h2>
+        {error && <p className="text-red-500">{error}</p>}
+        {
+          generations.length === 0 && (
+            <p>No generations found. Start a new one!</p>
+          )
+        }
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {generations.map((gen) => (
+            <Card key={gen.id}>
+              <CardHeader>
+                <CardTitle>Generation #{gen.id}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <img
+                  // src={gen.storagePath}
+                  src={gen.imageUrl}
+                  alt={`Generation ${gen.id}`}
+                  className="w-full h-48 object-cover rounded"
+                />
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {new Date(gen.createdAt * 1000).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  })}
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-2"
+                  onClick={() => window.open(gen.storagePath, '_blank')}
+                >
+                  View / Download
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </section >
   );
