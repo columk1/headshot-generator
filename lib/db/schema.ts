@@ -31,7 +31,7 @@ export const referenceImages = sqliteTable('reference_images', {
 	sessionId: integer('session_id')
 		.notNull()
 		.references(() => trainingSessions.id),
-	storagePath: text('storage_path').notNull(), // Location of the uploaded photo
+	url: text('url').notNull(), // Location of the uploaded photo
 	createdAt: integer('created_at')
 		.notNull()
 		.default(sql`(cast(unixepoch() as int))`),
@@ -39,10 +39,15 @@ export const referenceImages = sqliteTable('reference_images', {
 
 export const generations = sqliteTable('generations', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	sessionId: integer('session_id')
+	userId: integer('user_id')
 		.notNull()
-		.references(() => trainingSessions.id),
-	storagePath: text('storage_path').notNull(), // Where the generated headshot is stored
+		.references(() => users.id),
+	// sessionId: integer('session_id').references(() => trainingSessions.id),
+	gender: text('gender').notNull(),
+	background: text('background').notNull(),
+	inputImageUrl: text('input_image_url').notNull(),
+	status: text('status').notNull().default('pending_payment'),
+	imageUrl: text('image_url'), // Where the generated headshot is stored
 	createdAt: integer('created_at')
 		.notNull()
 		.default(sql`(cast(unixepoch() as int))`),
@@ -53,14 +58,17 @@ export const orders = sqliteTable('orders', {
 	userId: integer('user_id')
 		.notNull()
 		.references(() => users.id),
-	sessionId: integer('session_id')
+	// sessionId: integer('session_id').references(() => trainingSessions.id),
+	generationId: integer('generation_id')
 		.notNull()
-		.references(() => trainingSessions.id),
+		.references(() => generations.id),
 	stripePaymentIntentId: text('stripe_payment_intent_id').notNull(),
 	amountPaid: integer('amount_paid').notNull(), // e.g. in cents
+	status: text('status').notNull().default('pending'),
 	createdAt: integer('created_at')
 		.notNull()
 		.default(sql`(cast(unixepoch() as int))`),
+	updatedAt: integer('updated_at'),
 });
 
 /*
@@ -81,9 +89,20 @@ export const activityLogs = sqliteTable('activity_logs', {
  */
 
 export const generationsRelations = relations(generations, ({ one }) => ({
-	trainingSession: one(trainingSessions, {
-		fields: [generations.sessionId],
-		references: [trainingSessions.id],
+	userId: one(users, {
+		fields: [generations.userId],
+		references: [users.id],
+	}),
+}));
+
+export const ordersRelations = relations(orders, ({ one }) => ({
+	// trainingSession: one(trainingSessions, {
+	// 	fields: [orders.sessionId],
+	// 	references: [trainingSessions.id],
+	// }),
+	generation: one(generations, {
+		fields: [orders.generationId],
+		references: [generations.id],
 	}),
 }));
 
@@ -131,6 +150,9 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
+
+export type Generation = typeof generations.$inferSelect;
+export type NewGeneration = typeof generations.$inferInsert;
 
 // export type TeamDataWithMembers = Team & {
 // 	teamMembers: (TeamMember & {

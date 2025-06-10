@@ -1,13 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { downloadImage } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoaderCircle } from 'lucide-react';
 import { useActionState, useRef, useState } from 'react';
 import { deleteAccount } from '@/app/(login)/actions';
 import type { User } from '@/lib/db/schema';
-import { generateHeadshot } from '@/lib/ai/actions';
 import type { ActionState } from '@/lib/auth/middleware';
 import { useImageForm } from '@/hooks/useImageForm';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ import { signUploadForm } from '@/lib/cloudinary';
 import { IMG_UPLOAD_URL } from '@/lib/constants';
 import { z } from 'zod';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { processGenerationOrder } from '@/lib/payments/actions';
 
 // Background options with thumbnail URLs
 const backgroundOptions = [
@@ -28,7 +29,6 @@ const backgroundOptions = [
 
 type Generation = {
   id: number;
-  storagePath: string;
   imageUrl: string;
   createdAt: number;
 };
@@ -50,7 +50,7 @@ export function Dashboard({ initialGenerations }: { initialGenerations: Generati
   const [generateState, generateAction, isGeneratePending] = useActionState<
     GenerationState,
     FormData
-  >(generateHeadshot, { error: '', success: '' });
+  >(processGenerationOrder, { error: '', success: '' });
   const [removeState, removeAction, isRemovePending] = useActionState<
     ActionState,
     FormData
@@ -161,7 +161,7 @@ export function Dashboard({ initialGenerations }: { initialGenerations: Generati
                       accept="image/*"
                       className="hidden"
                     />
-                    <Input type="hidden" name="image" value={imageUrl} />
+                    <Input type="hidden" name="inputImageUrl" value={imageUrl} />
                   </div>
                 </div>
               </div>
@@ -233,6 +233,7 @@ export function Dashboard({ initialGenerations }: { initialGenerations: Generati
                   ))}
                 </RadioGroup>
               </div>
+              <Input type="hidden" name="product" value="headshotBasic" />
 
               {/* Submit Button */}
               <div className="pt-2">
@@ -262,10 +263,10 @@ export function Dashboard({ initialGenerations }: { initialGenerations: Generati
           )
         }
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {generations.map((gen) => (
+          {generations.map((gen, i) => (
             <Card key={gen.id}>
               <CardHeader>
-                <CardTitle>Generation #{gen.id}</CardTitle>
+                <CardTitle>Generation #{i + 1}</CardTitle>
               </CardHeader>
               <CardContent>
                 <img
@@ -286,7 +287,8 @@ export function Dashboard({ initialGenerations }: { initialGenerations: Generati
                 <Button
                   variant="outline"
                   className="mt-2"
-                  onClick={() => window.open(gen.storagePath, '_blank')}
+                  // download the image from the url without opening in new tab
+                  onClick={() => downloadImage(gen.imageUrl, `generation-${gen.id}.jpg`)}
                 >
                   View / Download
                 </Button>

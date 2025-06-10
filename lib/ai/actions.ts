@@ -6,42 +6,66 @@ import {
 	validatedAction,
 	validatedActionWithUser,
 } from '@/lib/auth/middleware';
-
-// const simpleGenerationSchema = z.object({
-// 	image: z.instanceof(File),
-// });
-
-const simpleGenerationSchema = z.object({
-	image: z.string(),
-	gender: z.enum(['male', 'female']),
-	background: z.enum(['neutral', 'office', 'city', 'nature']),
-});
+import {
+	createGeneration as createGenerationInDB,
+	getGenerationById,
+	updateGenerationOutput,
+} from '@/lib/db/queries';
+import { simpleGenerationSchema } from '../schemas/zod.schema';
 
 // const uploadImage = async () =>
 // 	'https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg';
 
-export const generateHeadshot = validatedAction(
-	simpleGenerationSchema,
-	async (data, formData) => {
-		console.log('data', data);
-		console.log('formData', formData);
-		const { image, gender, background } = data;
-		// const imageUrl = await uploadImage();
-		console.log('imageUrl', image);
+// export const createGeneration = validatedAction(
+// 	simpleGenerationSchema,
+// 	async (data, formData) => {
+// 		console.log('data', data);
+// 		console.log('formData', formData);
+// 		const { inputImageUrl, gender, background } = data;
+// 		console.log('imageUrl', inputImageUrl);
 
-		const headshot = await generateSimpleHeadshot({
-			gender,
-			background,
-			imageUrl: image,
-		});
-		console.log('headshot', headshot);
-		if (headshot) {
-			return {
-				success: 'Headshot generated successfully',
-				error: '',
-				imageUrl: headshot,
-			};
-		}
-		return { error: 'Failed to generate headshot', success: '' };
-	},
-);
+// 		const generation = await createGenerationInDB({
+// 			gender,
+// 			background,
+// 			inputImageUrl,
+// 		});
+
+// 		return {
+// 			generationId: generation.id,
+// 			error: '',
+// 			success: 'Generation created successfully',
+// 		};
+// 	},
+// );
+
+export const generateHeadshotById = async (generationId: number) => {
+	const generation = await getGenerationById(generationId);
+	if (!generation) {
+		return { error: 'Generation not found', success: '' };
+	}
+
+	// Validate the data from the DB against the Zod schema
+	const parsedData = simpleGenerationSchema.safeParse({
+		inputImageUrl: generation.inputImageUrl,
+		gender: generation.gender,
+		background: generation.background,
+	});
+
+	if (!parsedData.success) {
+		console.error(parsedData.error);
+		return { error: 'Invalid generation data in database.', success: '' };
+	}
+
+	const headshot = await generateSimpleHeadshot(parsedData.data);
+
+	console.log('headshot', headshot);
+	if (headshot) {
+		await updateGenerationOutput(generationId, headshot);
+		return {
+			success: 'Headshot generated successfully',
+			error: '',
+			imageUrl: headshot,
+		};
+	}
+	return { error: 'Failed to generate headshot', success: '' };
+};

@@ -4,6 +4,7 @@ import { users } from '@/lib/db/schema';
 import { setSession } from '@/lib/auth/session';
 import { type NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/payments/stripe';
+import { generateHeadshotById } from '@/lib/ai/actions';
 
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
@@ -28,6 +29,7 @@ export async function GET(request: NextRequest) {
 
 		const customerId = session.customer.id;
 		const userId = session.client_reference_id;
+
 		if (!userId) {
 			throw new Error("No user ID found in the session's client_reference_id.");
 		}
@@ -51,6 +53,7 @@ export async function GET(request: NextRequest) {
 			.where(eq(users.id, Number(userId)));
 
 		await setSession(user[0]);
+
 		return NextResponse.redirect(new URL('/dashboard', request.url));
 	} catch (error) {
 		console.error('Error handling successful checkout:', error);

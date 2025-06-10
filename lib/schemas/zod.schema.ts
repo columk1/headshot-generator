@@ -25,6 +25,29 @@ const ACCEPTED_IMAGE_TYPES = [
 	'image/webp',
 ];
 
+export const simpleGenerationSchema = z.object({
+	inputImageUrl: z.string(),
+	gender: z.enum(['male', 'female']),
+	background: z.enum(['neutral', 'office', 'city', 'nature']),
+});
+
+export type SimpleGenerationData = z.infer<typeof simpleGenerationSchema>;
+
+export const processOrderSchema = simpleGenerationSchema.extend({
+	product: z.enum(['headshotBasic']),
+});
+
+export type ProcessOrderData = z.infer<typeof processOrderSchema>;
+
+export const orderSchema = z.object({
+	userId: z.number().int().positive(),
+	generationId: z.number().int().positive(),
+	stripePaymentIntentId: z.string().min(1),
+	amountPaid: z.number().int().positive(),
+});
+
+export type OrderData = z.infer<typeof orderSchema>;
+
 // Client-side file validation
 export const imageSchema = z
 	.custom<File>()

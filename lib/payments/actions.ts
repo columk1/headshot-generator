@@ -1,8 +1,73 @@
 'use server';
 
+import { redirect } from 'next/navigation';
 import { createCheckoutSession } from './stripe';
+import { createGeneration } from '@/lib/db/queries';
+import { validatedActionWithUser } from '@/lib/auth/middleware';
+import { processOrderSchema } from '@/lib/schemas/zod.schema';
+import { rethrowIfRedirectError } from '@/lib/utils';
+
+const PRICE_IDS = {
+	headshotBasic: 'price_1RXz5mBFIgkt6SiyXJ9VW9Eu',
+} as const;
 
 export const checkoutAction = async (formData: FormData) => {
 	const priceId = formData.get('priceId') as string;
-	await createCheckoutSession({ priceId });
+	const generationId = formData.get('generationId') as string;
+	await createCheckoutSession({ priceId, generationId });
 };
+
+export const processGenerationOrder = validatedActionWithUser(
+	processOrderSchema,
+	async (data, user) => {
+		const { inputImageUrl, gender, background, product } = data;
+		const priceId = PRICE_IDS[product];
+
+		let generationId: number;
+
+		try {
+			const generationRecord = await createGeneration({
+				inputImageUrl,
+				gender,
+				background,
+			});
+
+			if (!generationRecord || typeof generationRecord.id !== 'number') {
+				throw new Error(
+					'Failed to create generation record or retrieve its ID.',
+				);
+			}
+			generationId = generationRecord.id;
+			console.log(
+				`Generation record ${generationId} created with PENDING_PAYMENT status.`,
+			);
+		} catch (err) {
+			console.error('Database error creating generation record:', err);
+			return {
+				error: 'Failed to save generation details. Please try again.',
+				success: '',
+			};
+		}
+
+		try {
+			await createCheckoutSession({
+				priceId,
+				generationId: generationId.toString(),
+			});
+			return {
+				success: 'Payment processing initiated, redirecting to Stripe...', // User might not see this
+				error: '',
+			};
+		} catch (error: unknown) {
+			rethrowIfRedirectError(error);
+
+			console.error('Error processing generation order:', error);
+			const errorMessage =
+				error instanceof Error ? error.message : 'An unknown error occurred.';
+			return {
+				success: false,
+				error: `Failed to process order: ${errorMessage}`,
+			};
+		}
+	},
+);

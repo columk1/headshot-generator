@@ -8,7 +8,7 @@ export const replicate = new Replicate({
 type GenerateSimpleHeadshotParams = {
 	gender: 'male' | 'female';
 	background: 'neutral' | 'office' | 'city' | 'nature';
-	imageUrl: string;
+	inputImageUrl: string;
 	aspectRatio?: '1:1';
 };
 
@@ -16,23 +16,23 @@ export const generateSimpleHeadshot = async (
 	params: GenerateSimpleHeadshotParams,
 ) => {
 	return 'https://www.denverheadshotco.com/wp-content/uploads/2024/08/Top-17-Professional-Headshot-Examples-For-Men-Women-2.png';
-	const { gender, background, imageUrl, aspectRatio = '1:1' } = params;
-	const input = {
-		gender,
-		background,
-		input_image: imageUrl,
-		aspect_ratio: aspectRatio,
-	};
-	const output = (await replicate.run(
-		'flux-kontext-apps/professional-headshot',
-		{ input },
-	)) as FileOutput;
-	console.log(output);
+	// 	const { gender, background, inputImageUrl, aspectRatio = '1:1' } = params;
+	// 	const input = {
+	// 		gender,
+	// 		background,
+	// 		input_image: inputImageUrl,
+	// 		aspect_ratio: aspectRatio,
+	// 	};
+	// 	const output = (await replicate.run(
+	// 		'flux-kontext-apps/professional-headshot',
+	// 		{ input },
+	// 	)) as FileOutput;
+	// 	console.log(output);
 
-	const blob = await output.blob();
-	const buffer = Buffer.from(await blob.arrayBuffer());
-	await fs.writeFile('output.png', buffer);
-	return output.url().href;
+	// 	const blob = await output.blob();
+	// 	const buffer = Buffer.from(await blob.arrayBuffer());
+	// 	await fs.writeFile('output.png', buffer);
+	// 	return output.url().href;
 };
 
 // const output = (await replicate.run(
