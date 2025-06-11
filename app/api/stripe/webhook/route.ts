@@ -6,6 +6,7 @@ import {
 	getOrderByPaymentIntentId,
 	updateOrderPaymentStatus,
 } from '@/lib/db/queries';
+import { revalidatePath } from 'next/cache';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? '';
 
@@ -84,7 +85,10 @@ export async function POST(request: NextRequest) {
 				console.error('Error processing checkout session:', error);
 			}
 			// generate image after the response has been sent
-			after(async () => await processCheckoutSession(stripe, session));
+			after(async () => {
+				await processCheckoutSession(stripe, session);
+				revalidatePath('/dashboard');
+			});
 			break;
 		}
 		default:

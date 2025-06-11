@@ -118,27 +118,31 @@ export async function getActivityLogs() {
 		.limit(10);
 }
 
-export async function getGenerations() {
+export async function getGenerations(options?: { onlyComplete?: boolean }) {
+	const { onlyComplete = false } = options || {};
 	const user = await getUser();
 	if (!user) {
 		throw new Error('User not authenticated');
 	}
-	const completedGenerations = await db
+
+	const conditions = [eq(generations.userId, user.id)];
+
+	if (onlyComplete) {
+		conditions.push(eq(generations.status, 'COMPLETED'));
+	}
+
+	const results = await db
 		.select({
 			id: generations.id,
-			imageUrl: sql<string>`COALESCE(${generations.imageUrl}, '')`.mapWith(
-				String,
-			),
+			imageUrl: generations.imageUrl,
+			status: generations.status,
 			createdAt: generations.createdAt,
 		})
 		.from(generations)
-		.where(
-			// status is completed
-			and(eq(generations.userId, user.id), eq(generations.status, 'completed')),
-		)
+		.where(and(...conditions))
 		.orderBy(desc(generations.createdAt));
 
-	return completedGenerations;
+	return results;
 }
 
 export async function createOrder(data: {
@@ -148,7 +152,8 @@ export async function createOrder(data: {
 	amountPaid: number;
 	status: string; // Added status parameter
 }) {
-	const { userId, generationId, stripePaymentIntentId, amountPaid, status } = data;
+	const { userId, generationId, stripePaymentIntentId, amountPaid, status } =
+		data;
 
 	const order = await db
 		.insert(orders)
@@ -196,7 +201,24 @@ export async function getGenerationById(id: number) {
 		.get();
 }
 
-export async function updateGenerationStatus(id: number, status: string) {
+/**
+ * Valid generation status values
+ */
+export type GenerationStatus =
+	| 'PENDING_PAYMENT'
+	| 'PROCESSING'
+	| 'COMPLETED'
+	| 'FAILED';
+
+/**
+ * Updates a generation status
+ * @param id - The ID of the generation to update
+ * @param status - The new status value
+ */
+export async function updateGenerationStatus(
+	id: number,
+	status: GenerationStatus,
+) {
 	await db
 		.update(generations)
 		.set({
@@ -205,12 +227,18 @@ export async function updateGenerationStatus(id: number, status: string) {
 		.where(eq(generations.id, id));
 }
 
+/**
+ * Updates a generation with the output image URL and sets status to COMPLETED
+ * @param id - The ID of the generation to update
+ * @param imageUrl - The URL of the generated image
+ */
 export async function updateGenerationOutput(id: number, imageUrl: string) {
+	// Update the image URL and status in a single operation
 	await db
 		.update(generations)
 		.set({
 			imageUrl,
-			status: 'completed',
+			status: 'COMPLETED' as GenerationStatus,
 		})
 		.where(eq(generations.id, id));
 }

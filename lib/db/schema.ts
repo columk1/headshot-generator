@@ -46,7 +46,7 @@ export const generations = sqliteTable('generations', {
 	gender: text('gender').notNull(),
 	background: text('background').notNull(),
 	inputImageUrl: text('input_image_url').notNull(),
-	status: text('status').notNull().default('pending_payment'),
+	status: text('status').notNull().default('PENDING_PAYMENT'),
 	imageUrl: text('image_url'), // Where the generated headshot is stored
 	createdAt: integer('created_at')
 		.notNull()
@@ -150,9 +150,6 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
-
-export type Generation = typeof generations.$inferSelect;
-export type NewGeneration = typeof generations.$inferInsert;
 
 // export type TeamDataWithMembers = Team & {
 // 	teamMembers: (TeamMember & {

@@ -10,6 +10,8 @@ import {
 	createGeneration as createGenerationInDB,
 	getGenerationById,
 	updateGenerationOutput,
+	updateGenerationStatus,
+	type GenerationStatus,
 } from '@/lib/db/queries';
 import { simpleGenerationSchema } from '../schemas/zod.schema';
 
@@ -56,16 +58,29 @@ export const generateHeadshotById = async (generationId: number) => {
 		return { error: 'Invalid generation data in database.', success: '' };
 	}
 
-	const headshot = await generateSimpleHeadshot(parsedData.data);
+	// Update status to PROCESSING before starting the AI generation
+	// This allows the frontend to start polling for updates
+	await updateGenerationStatus(generationId, 'PROCESSING');
 
-	console.log('headshot', headshot);
-	if (headshot) {
-		await updateGenerationOutput(generationId, headshot);
-		return {
-			success: 'Headshot generated successfully',
-			error: '',
-			imageUrl: headshot,
-		};
+	try {
+		const headshot = await generateSimpleHeadshot(parsedData.data);
+
+		console.log('headshot', headshot);
+		if (headshot) {
+			await updateGenerationOutput(generationId, headshot);
+			return {
+				success: 'Headshot generated successfully',
+				error: '',
+				imageUrl: headshot,
+			};
+		}
+		// If we get here, generation failed but didn't throw an error
+		await updateGenerationStatus(generationId, 'FAILED');
+		return { error: 'Failed to generate headshot', success: '' };
+	} catch (error) {
+		// If an error occurs during generation, update status to FAILED
+		console.error('Error generating headshot:', error);
+		await updateGenerationStatus(generationId, 'FAILED');
+		return { error: 'Error during headshot generation', success: '' };
 	}
-	return { error: 'Failed to generate headshot', success: '' };
 };

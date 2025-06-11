@@ -1,5 +1,6 @@
 import Replicate, { type FileOutput } from 'replicate';
 import { promises as fs } from 'node:fs';
+import { revalidatePath } from 'next/cache';
 
 export const replicate = new Replicate({
 	auth: process.env.REPLICATE_API_TOKEN,
@@ -15,6 +16,7 @@ type GenerateSimpleHeadshotParams = {
 export const generateSimpleHeadshot = async (
 	params: GenerateSimpleHeadshotParams,
 ) => {
+	await new Promise((resolve) => setTimeout(resolve, 10000));
 	return 'https://www.denverheadshotco.com/wp-content/uploads/2024/08/Top-17-Professional-Headshot-Examples-For-Men-Women-2.png';
 	// 	const { gender, background, inputImageUrl, aspectRatio = '1:1' } = params;
 	// 	const input = {

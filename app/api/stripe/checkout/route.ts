@@ -52,9 +52,18 @@ export async function GET(request: NextRequest) {
 			})
 			.where(eq(users.id, Number(userId)));
 
+		// Get the generation ID from the session metadata
+		const generationId = session.metadata?.generationId;
+		
 		await setSession(user[0]);
 
-		return NextResponse.redirect(new URL('/dashboard', request.url));
+		// Add a query parameter to indicate a generation is being processed
+		return NextResponse.redirect(
+			new URL(
+				`/dashboard${generationId ? `?processing=${generationId}` : ''}`,
+				request.url
+			)
+		);
 	} catch (error) {
 		console.error('Error handling successful checkout:', error);
 		return NextResponse.redirect(new URL('/error', request.url));
