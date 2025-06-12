@@ -34,11 +34,15 @@ function UserMenu() {
   if (!user) {
     return (
       <>
-        <Button
-          asChild
-          className="bg-black hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-full"
+        <Link
+          href="/sign-in"
+          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
-          <Link href="/sign-up">Sign Up</Link>
+          Log in
+        </Link>
+        <Button className="rounded-full">
+          <Link href="/sign-up">Get Started</Link>
+          <ChevronRight className="ml-1 size-4" />
         </Button>
       </>
     );
@@ -108,7 +112,7 @@ function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"} border-b border-border`}
+      className={`sticky top-0 pt-2 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"} border-b border-border`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 font-bold">
@@ -206,10 +210,10 @@ export default function HomeLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
+    <div className="flex flex-col min-h-[calc(100dvh-68px)]">
       <Header />
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <main className="flex-1 overflow-y-auto max-w-7xl mx-auto">{children}</main>
     </div>
   );
 }
