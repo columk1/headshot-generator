@@ -213,7 +213,7 @@ export default function HomeLayout({
     <div className="flex flex-col min-h-[calc(100dvh-68px)]">
       <Header />
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto max-w-7xl mx-auto">{children}</main>
+      <main className="flex-1 overflow-y-auto max-w-7xl mx-auto w-full">{children}</main>
     </div>
   );
 }

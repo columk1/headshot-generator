@@ -49,7 +49,7 @@ export function useGenerationPolling(
 		}
 
 		// Set initial status message
-		setPollingStatus(`Polling generation #${pendingGeneration.id}...`);
+		setPollingStatus('Uploading...');
 
 		/**
 		 * Poll the generation status API and handle state changes
@@ -75,7 +75,7 @@ export function useGenerationPolling(
 				}
 
 				// Update UI with current status
-				setPollingStatus(`Generation #${data.id} status: ${data.status}`);
+				setPollingStatus(`Generation status: ${data.status}`);
 
 				// Return true only if we should continue polling
 				return data.status === 'PROCESSING';
@@ -90,7 +90,7 @@ export function useGenerationPolling(
 		 * Handle the end of polling, whether due to completion or error
 		 */
 		const handlePollingEnd = (): void => {
-			setPollingStatus(`Generation #${pendingGeneration.id} completed.`);
+			setPollingStatus('Generation completed.');
 
 			setTimeout(() => {
 				setPollingStatus(null);

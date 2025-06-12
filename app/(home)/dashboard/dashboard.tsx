@@ -278,58 +278,66 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
       <div className="space-y-4">
         {renderPollingStatus()}
         {generateState.error && <p className="text-red-500">{generateState.error}</p>}
-        {generateState.imageUrl && <img src={generateState.imageUrl} alt="Current Generation" className="max-h-48 object-contain rounded" />}
+        {generateState.imageUrl && (
+          <img
+            src={generateState.imageUrl}
+            alt="Current Generation"
+            className="max-h-48 object-contain rounded"
+          />
+        )}
 
         <h2 className="text-xl font-medium mb-4">Your Generations</h2>
         {error && <p className="text-red-500">{error}</p>}
-        {
-          generations.length === 0 && (
-            <p>No generations found. Start a new one!</p>
-          )
-        }
         <button type="button" onClick={() => router.refresh()}>Refresh</button>
         <button type="button" onClick={() => router.push('/dashboard')}>Push</button>
         <button type="button" onClick={() => revalidate()}>Revalidate</button>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {completedGenerations.map((gen, i) => (
-            <Card key={gen.id}>
-              <CardHeader>
-                <CardTitle>Generation #{i + 1}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {gen.imageUrl ? (
-                  <img
-                    src={gen.imageUrl}
-                    alt={`Generation ${gen.id}`}
-                    className="w-full aspect-square object-cover rounded"
-                  />
-                ) : (
-                  <div className="w-full aspect-square bg-muted flex items-center justify-center rounded">
-                    <p className="text-muted-foreground">No image available</p>
-                  </div>
-                )}
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {new Date(gen.createdAt * 1000).toLocaleString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: 'numeric',
-                  })}
-                </p>
-                <Button
-                  variant="outline"
-                  className="mt-2"
-                  onClick={() => gen.imageUrl && downloadImage(gen.imageUrl, `generation-${gen.id}.jpg`)}
-                  disabled={!gen.imageUrl}
-                >
-                  Download
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+        {generations.length === 0 ? (
+          <div className="w-full text-center text-muted-foreground">
+            No generations yet. Start a new one!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {completedGenerations.map((gen, i) => (
+              <Card key={gen.id}>
+                <CardHeader>
+                  <CardTitle>Generation #{i + 1}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {gen.imageUrl ? (
+                    <img
+                      src={gen.imageUrl}
+                      alt={`Generation ${gen.id}`}
+                      className="w-full aspect-square object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-full aspect-square bg-muted flex items-center justify-center rounded">
+                      <p className="text-muted-foreground">No image available</p>
+                    </div>
+                  )}
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {new Date(gen.createdAt * 1000).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                    })}
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="mt-2"
+                    onClick={() => gen.imageUrl && downloadImage(gen.imageUrl, `generation-${gen.id}.jpg`)}
+                    disabled={!gen.imageUrl}
+                  >
+                    Download
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
-    </section >
+    </section>
   );
 }
