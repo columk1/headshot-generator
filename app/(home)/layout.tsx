@@ -34,12 +34,6 @@ function UserMenu() {
   if (!user) {
     return (
       <>
-        <Link
-          href="/pricing"
-          className={`text-sm font-medium text-gray-700 hover:text-gray-900 ${getActiveLinkClasses('/pricing')}`}
-        >
-          Pricing
-        </Link >
         <Button
           asChild
           className="bg-black hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-full"
