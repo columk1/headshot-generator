@@ -62,6 +62,7 @@
 @layer utilities {
   body {
     font-family: "Manrope", Arial, Helvetica, sans-serif;
+    overflow-y: scroll;
   }
 }
 

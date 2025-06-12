@@ -23,6 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const userPromise = getUser();
+  // html {
+  //   overflow-x: hidden;
+  //   margin-right: calc(-1 * (100vw - 100%));
+  // }
 
   return (
     <html

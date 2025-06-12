@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { useGenerationPolling, type Generation } from '@/hooks/use-generation-polling';
 import { revalidate } from '@/lib/ai/actions';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 // Background options with thumbnail URLs
 const backgroundOptions = [
@@ -46,6 +47,7 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
   const [image, setImage] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
+  const [formOpen, setFormOpen] = useState("1");
 
   const [generateState, generateAction, isGeneratePending] = useActionState<
     GenerationState,
@@ -130,139 +132,148 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
   return (
     <section className="flex-1 p-4 lg:p-8">
       <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Create Your Professional Headshot</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form action={generateAction} className="space-y-6">
-            {/* Image Upload Section */}
-            <div className="space-y-4">
-              <div>
-                <Label className="block text-sm font-medium mb-2">Upload Your Photo</Label>
-                <div className="flex items-center gap-4">
-                  <div className="relative h-32 w-32 rounded-md border-2 border-dashed border-gray-300 dark:border-gray-700 overflow-hidden">
-                    {image ? (
-                      <img
-                        src={image}
-                        alt="Preview"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">Preview</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2 flex flex-col items-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleUploadButtonClick}
-                      disabled={uploading}
-                      className="gap-2 min-w-28"
-                    >
-                      {uploading ? (
-                        <LoaderCircle className="size-4 animate-spin text-white" />
-                      ) : 'Choose File'}
-                    </Button>
-                    <p className="text-xs text-muted-foreground">
-                      {image && !uploading ? <CircleCheck className="h-5 w-5 text-primary" /> : uploading ? 'Analyzing...' : 'JPG or PNG, max 10MB'}
-                    </p>
-                    <Input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileChange}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <Input type="hidden" name="inputImageUrl" value={imageUrl} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Gender Selection */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium block mb-2">Gender</Label>
-                <RadioGroup
-                  name="gender"
-                  defaultValue={defaultGender}
-                  className="flex gap-3 w-fit"
-                >
-                  <div>
-                    <RadioGroupItem
-                      value="male"
-                      id="male"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="male"
-                      className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                    >
-                      <span className="font-medium">Male</span>
-                    </Label>
-                  </div>
-                  <div>
-                    <RadioGroupItem
-                      value="female"
-                      id="female"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="female"
-                      className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                    >
-                      <span className="font-medium">Female</span>
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Background Selection */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium block mb-2">Background Style</Label>
-                <RadioGroup
-                  name="background"
-                  defaultValue={defaultBackground}
-                  className="grid grid-cols-4 gap-3 w-full"
-                >
-                  {backgroundOptions.map((option) => (
-                    <div key={option.id}>
-                      <RadioGroupItem
-                        value={option.id}
-                        id={option.id}
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor={option.id}
-                        className="flex flex-col items-center justify-between rounded-lg border border-muted bg-popover p-2 hover:bg-black/25 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full"
-                      >
-                        <div className="w-full aspect-square bg-muted rounded-lg overflow-hidden">
-                          <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center text-xs text-muted-foreground">
-                            {option.label}
-                          </div>
+        <Accordion type="single" collapsible value={formOpen} onValueChange={setFormOpen}>
+          <AccordionItem value="1">
+            <CardHeader className="px-6 py-0">
+              <AccordionTrigger className="cursor-pointer hover:no-underline items-center">
+                <CardTitle className="text-xl font-medium">Create Your Professional Headshot</CardTitle>
+              </AccordionTrigger>
+            </CardHeader>
+            <AccordionContent>
+              <CardContent>
+                <form action={generateAction} className="space-y-6">
+                  {/* Image Upload Section */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="block text-sm font-medium mb-2">Upload Your Photo</Label>
+                      <div className="flex items-center gap-4">
+                        <div className="relative h-32 w-32 rounded-md border-2 border-dashed border-gray-300 dark:border-gray-700 overflow-hidden">
+                          {image ? (
+                            <img
+                              src={image}
+                              alt="Preview"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">Preview</span>
+                            </div>
+                          )}
                         </div>
-                        <span className="text-sm font-medium">{option.label}</span>
-                      </Label>
+                        <div className="space-y-2 flex flex-col items-center">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleUploadButtonClick}
+                            disabled={uploading}
+                            className="gap-2 min-w-28"
+                          >
+                            {uploading ? (
+                              <LoaderCircle className="size-4 animate-spin text-white" />
+                            ) : 'Choose File'}
+                          </Button>
+                          <p className="text-xs text-muted-foreground">
+                            {image && !uploading ? <CircleCheck className="h-5 w-5 text-primary" /> : uploading ? 'Analyzing...' : 'JPG or PNG, max 10MB'}
+                          </p>
+                          <Input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            accept="image/*"
+                            className="hidden"
+                          />
+                          <Input type="hidden" name="inputImageUrl" value={imageUrl} />
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                </RadioGroup>
-              </div>
-              <Input type="hidden" name="product" value="headshotBasic" />
 
-              {/* Submit Button */}
-              <div className="pt-2">
-                <Button
-                  type="submit"
-                  disabled={!imageUrl || uploading || isGeneratePending}
-                  className="w-full"
-                >
-                  {isGeneratePending ? <LoaderCircle className="size-4 animate-spin text-white" /> : 'Generate'}
-                </Button>
-              </div>
-            </div>
-          </form>
-        </CardContent>
+                    {/* Gender Selection */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium block mb-2">Gender</Label>
+                      <RadioGroup
+                        name="gender"
+                        defaultValue={defaultGender}
+                        className="flex gap-3 w-fit"
+                      >
+                        <div>
+                          <RadioGroupItem
+                            value="male"
+                            id="male"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="male"
+                            className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                          >
+                            <span className="font-medium">Male</span>
+                          </Label>
+                        </div>
+                        <div>
+                          <RadioGroupItem
+                            value="female"
+                            id="female"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="female"
+                            className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                          >
+                            <span className="font-medium">Female</span>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+
+                    {/* Background Selection */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium block mb-2">Background Style</Label>
+                      <RadioGroup
+                        name="background"
+                        defaultValue={defaultBackground}
+                        className="grid grid-cols-4 gap-3 w-full"
+                      >
+                        {backgroundOptions.map((option) => (
+                          <div key={option.id}>
+                            <RadioGroupItem
+                              value={option.id}
+                              id={option.id}
+                              className="peer sr-only"
+                            />
+                            <Label
+                              htmlFor={option.id}
+                              className="flex flex-col items-center justify-between rounded-lg border border-muted bg-popover p-2 hover:bg-black/25 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full"
+                            >
+                              <div className="w-full aspect-square bg-muted rounded-lg overflow-hidden">
+                                <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center text-xs text-muted-foreground">
+                                  {option.label}
+                                </div>
+                              </div>
+                              <span className="text-sm font-medium">{option.label}</span>
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                    <Input type="hidden" name="product" value="headshotBasic" />
+
+                    {/* Submit Button */}
+                    <div className="pt-2">
+                      <Button
+                        type="submit"
+                        disabled={!imageUrl || uploading || isGeneratePending}
+                        className="w-full"
+                      >
+                        {isGeneratePending ? <LoaderCircle className="size-4 animate-spin text-white" /> : 'Generate'}
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </Card>
+
 
       <div className="space-y-4">
         {renderPollingStatus()}
