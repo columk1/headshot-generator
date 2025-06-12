@@ -14,6 +14,7 @@ import {
 	type GenerationStatus,
 } from '@/lib/db/queries';
 import { simpleGenerationSchema } from '../schemas/zod.schema';
+import { revalidatePath } from 'next/cache';
 
 // const uploadImage = async () =>
 // 	'https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg';
@@ -40,7 +41,9 @@ import { simpleGenerationSchema } from '../schemas/zod.schema';
 // 	},
 // );
 
-export const generateHeadshotById = async (generationId: number) => {
+export const revalidate = async () => revalidatePath('/dashboard');
+
+export async function generateHeadshotById(generationId: number) {
 	const generation = await getGenerationById(generationId);
 	if (!generation) {
 		return { error: 'Generation not found', success: '' };
@@ -57,10 +60,6 @@ export const generateHeadshotById = async (generationId: number) => {
 		console.error(parsedData.error);
 		return { error: 'Invalid generation data in database.', success: '' };
 	}
-
-	// Update status to PROCESSING before starting the AI generation
-	// This allows the frontend to start polling for updates
-	await updateGenerationStatus(generationId, 'PROCESSING');
 
 	try {
 		const headshot = await generateSimpleHeadshot(parsedData.data);
@@ -83,4 +82,4 @@ export const generateHeadshotById = async (generationId: number) => {
 		await updateGenerationStatus(generationId, 'FAILED');
 		return { error: 'Error during headshot generation', success: '' };
 	}
-};
+}

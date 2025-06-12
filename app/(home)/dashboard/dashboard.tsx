@@ -22,6 +22,7 @@ import { processGenerationOrder } from '@/lib/payments/actions';
 import { useRouter } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { useGenerationPolling, type Generation } from '@/hooks/use-generation-polling';
+import { revalidate } from '@/lib/ai/actions';
 
 // Background options with thumbnail URLs
 const backgroundOptions = [
@@ -35,8 +36,9 @@ type GenerationState = ActionState & {
   imageUrl?: string;
 }
 
-export function Dashboard({ initialGenerations, pendingGeneration }: { initialGenerations: Generation[]; pendingGeneration: Generation | null }): ReactElement {
-  const [generations, setGenerations] = useState<Generation[]>(initialGenerations);
+export function Dashboard({ generations, pendingGeneration }: { generations: Generation[]; pendingGeneration: Generation | null }): ReactElement {
+  // const [generations, setGenerations] = useState<Generation[]>(initialGenerations);
+  const completedGenerations = generations.filter(g => g.status === 'COMPLETED');
   const [error, setError] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
@@ -56,7 +58,7 @@ export function Dashboard({ initialGenerations, pendingGeneration }: { initialGe
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  // Use the custom hook for generation polling
+
   const { pollingStatus } = useGenerationPolling(pendingGeneration);
 
   const handleUploadButtonClick = (): void => {
@@ -164,7 +166,7 @@ export function Dashboard({ initialGenerations, pendingGeneration }: { initialGe
                       ) : 'Choose File'}
                     </Button>
                     <p className="text-xs text-muted-foreground">
-                      {image && !uploading ? <CircleCheck className="h-5 w-5 text-primary" /> : 'JPG or PNG, max 10MB'}
+                      {image && !uploading ? <CircleCheck className="h-5 w-5 text-primary" /> : uploading ? 'Analyzing...' : 'JPG or PNG, max 10MB'}
                     </p>
                     <Input
                       type="file"
@@ -275,10 +277,11 @@ export function Dashboard({ initialGenerations, pendingGeneration }: { initialGe
             <p>No generations found. Start a new one!</p>
           )
         }
-        // <button type="button" onClick={() => router.refresh()}>Refresh</button>
-        // <button type="button" onClick={() => router.push('/dashboard')}>Push</button>
+        <button type="button" onClick={() => router.refresh()}>Refresh</button>
+        <button type="button" onClick={() => router.push('/dashboard')}>Push</button>
+        <button type="button" onClick={() => revalidate()}>Revalidate</button>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {generations.map((gen, i) => (
+          {completedGenerations.map((gen, i) => (
             <Card key={gen.id}>
               <CardHeader>
                 <CardTitle>Generation #{i + 1}</CardTitle>
@@ -310,7 +313,7 @@ export function Dashboard({ initialGenerations, pendingGeneration }: { initialGe
                   onClick={() => gen.imageUrl && downloadImage(gen.imageUrl, `generation-${gen.id}.jpg`)}
                   disabled={!gen.imageUrl}
                 >
-                  View / Download
+                  Download
                 </Button>
               </CardContent>
             </Card>

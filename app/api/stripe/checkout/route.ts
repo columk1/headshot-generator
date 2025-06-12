@@ -5,6 +5,7 @@ import { setSession } from '@/lib/auth/session';
 import { type NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/payments/stripe';
 import { generateHeadshotById } from '@/lib/ai/actions';
+import { updateGenerationStatus } from '@/lib/db/queries';
 
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
@@ -52,17 +53,24 @@ export async function GET(request: NextRequest) {
 			})
 			.where(eq(users.id, Number(userId)));
 
+		await setSession(user[0]);
+
 		// Get the generation ID from the session metadata
 		const generationId = session.metadata?.generationId;
-		
-		await setSession(user[0]);
+
+		if (!generationId) {
+			throw new Error('No generation ID found in the session metadata.');
+		}
+
+		await updateGenerationStatus(Number(generationId), 'PROCESSING');
 
 		// Add a query parameter to indicate a generation is being processed
 		return NextResponse.redirect(
 			new URL(
-				`/dashboard${generationId ? `?processing=${generationId}` : ''}`,
-				request.url
-			)
+				// `/dashboard${generationId ? `?processing=${generationId}` : ''}`,
+				'/dashboard',
+				request.url,
+			),
 		);
 	} catch (error) {
 		console.error('Error handling successful checkout:', error);
