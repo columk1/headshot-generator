@@ -55,7 +55,6 @@ export function validatedActionWithUser<S extends ZodTypeAny, T>(
 		}
 
 		const result = schema.safeParse(Object.fromEntries(formData));
-		console.log(result);
 		if (!result.success) {
 			console.log(result.error);
 			return { error: result.error.errors[0].message } as T;

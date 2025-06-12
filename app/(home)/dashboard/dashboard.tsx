@@ -32,6 +32,9 @@ const backgroundOptions = [
   { id: 'nature', label: 'Nature', thumbnail: '/backgrounds/nature.jpg' },
 ];
 
+const defaultGender = 'male';
+const defaultBackground = 'neutral';
+
 type GenerationState = ActionState & {
   imageUrl?: string;
 }
@@ -43,9 +46,6 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
   const [image, setImage] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
-  // Using default values for the radio groups
-  const defaultGender = 'male';
-  const defaultBackground = 'neutral';
 
   const [generateState, generateAction, isGeneratePending] = useActionState<
     GenerationState,
@@ -266,11 +266,10 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
 
       <div className="space-y-4">
         {renderPollingStatus()}
-        <h2 className="text-xl font-medium mb-4">Current Generation</h2>
         {generateState.error && <p className="text-red-500">{generateState.error}</p>}
         {generateState.imageUrl && <img src={generateState.imageUrl} alt="Current Generation" className="max-h-48 object-contain rounded" />}
 
-        <h2 className="text-xl font-medium mb-4">Your Previous Generations</h2>
+        <h2 className="text-xl font-medium mb-4">Your Generations</h2>
         {error && <p className="text-red-500">{error}</p>}
         {
           generations.length === 0 && (
