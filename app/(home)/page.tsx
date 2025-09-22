@@ -114,13 +114,15 @@ export default function LandingPage() {
                 for professionals, teams, and businesses of all sizes.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="rounded-full h-12 px-8 text-base">
-                  Create Your Headshot
-                  <ArrowRight className="ml-2 size-4" />
-                </Button>
-                <Button size="lg" variant="outline" className="rounded-full h-12 px-8 text-base">
+                <Link href="/dashboard">
+                  <Button size="lg" className="rounded-full h-12 px-8 text-base">
+                    Create Your Headshot
+                    <ArrowRight className="ml-2 size-4" />
+                  </Button>
+                </Link>
+                {/* <Button size="lg" variant="outline" className="rounded-full h-12 px-8 text-base">
                   View Examples
-                </Button>
+                </Button> */}
               </div>
               <div className="flex items-center justify-center gap-4 mt-6 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
@@ -317,14 +319,14 @@ export default function LandingPage() {
               {[
                 {
                   quote:
-                    "HeadshotAI transformed my LinkedIn profile. I got a professional headshot in minutes without having to schedule a photoshoot.",
+                    "BizPortraits transformed my LinkedIn profile. I got a professional headshot in minutes without having to schedule a photoshoot.",
                   author: "Sarah Johnson",
                   role: "Marketing Director, TechCorp",
                   rating: 5,
                 },
                 {
                   quote:
-                    "As a remote worker, I needed a professional headshot but couldn't find a photographer. HeadshotAI solved my problem instantly.",
+                    "As a remote worker, I needed a professional headshot but couldn't find a photographer. BizPortraits solved my problem instantly.",
                   author: "Michael Chen",
                   role: "Software Engineer, RemoteFirst",
                   rating: 5,
@@ -338,7 +340,7 @@ export default function LandingPage() {
                 },
                 {
                   quote:
-                    "The quality is incredible. I've had professional headshots taken before, and honestly, I prefer the ones from HeadshotAI.",
+                    "The quality is incredible. I've had professional headshots taken before, and honestly, I prefer the ones from BizPortraits.",
                   author: "David Kim",
                   role: "CEO, InnovateNow",
                   rating: 5,
@@ -352,7 +354,7 @@ export default function LandingPage() {
                 },
                 {
                   quote:
-                    "We needed consistent headshots for our entire executive team across different locations. HeadshotAI made it possible in just one day.",
+                    "We needed consistent headshots for our entire executive team across different locations. BizPortraits made it possible in just one day.",
                   author: "James Wilson",
                   role: "COO, Global Enterprises",
                   rating: 5,
@@ -457,7 +459,9 @@ export default function LandingPage() {
                         <span>30-day access to your headshot</span>
                       </li> */}
                     </ul>
-                    <Button className="w-full mt-auto rounded-full">Get Your Headshot</Button>
+                    <Link href="/dashboard">
+                      <Button className="w-full mt-auto rounded-full">Get Your Headshot</Button>
+                    </Link>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -507,7 +511,7 @@ export default function LandingPage() {
                         <span>Priority support</span>
                       </li>
                     </ul>
-                    <Button className="w-full mt-auto rounded-full bg-primary hover:bg-primary/90">
+                    <Button disabled className="w-full mt-auto rounded-full bg-primary hover:bg-primary/90">
                       Create Your Model
                     </Button>
                   </CardContent>
@@ -612,17 +616,19 @@ export default function LandingPage() {
                 Be among the first to transform your image with our AI-powered headshot generator.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mt-4">
-                <Button size="lg" variant="secondary" className="rounded-full h-12 px-8 text-base">
-                  Get Your Headshot Now
-                  <ArrowRight className="ml-2 size-4" />
-                </Button>
-                <Button
+                <Link href="/dashboard">
+                  <Button size="lg" variant="secondary" className="rounded-full h-12 px-8 text-base">
+                    Get Your Headshot Now
+                    <ArrowRight className="ml-2 size-4" />
+                  </Button>
+                </Link>
+                {/* <Button
                   size="lg"
                   variant="outline"
                   className="rounded-full h-12 px-8 text-base bg-transparent border-white text-white hover:bg-white/10"
                 >
                   View Examples
-                </Button>
+                </Button> */}
               </div>
               <p className="text-sm text-primary-foreground/80 mt-4">
                 No subscription required. One-time purchase. 100% satisfaction guarantee.
@@ -638,7 +644,7 @@ export default function LandingPage() {
               <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
                 H
               </div>
-              <span>HeadshotAI</span>
+              <span>BizPortraits</span>
             </div>
             <ul className="flex gap-4 text-sm">
               <li>
@@ -662,7 +668,7 @@ export default function LandingPage() {
                 </Link>
               </li>
               <li>
-                <Link href="mailto:support@headshotai.com" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="mailto:support@bizportraits.com" className="text-muted-foreground hover:text-foreground transition-colors">
                   Support
                 </Link>
               </li>
@@ -670,7 +676,7 @@ export default function LandingPage() {
           </div>
           <div className="flex gap-4 justify-between border-t border-border/40 pt-8">
             <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} HeadshotAI. All rights reserved.
+              &copy; {new Date().getFullYear()} BizPortraits. All rights reserved.
             </p>
             <ul className="flex gap-4 text-xs">
               <li>

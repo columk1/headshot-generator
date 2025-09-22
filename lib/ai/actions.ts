@@ -15,6 +15,7 @@ import {
 } from '@/lib/db/queries';
 import { simpleGenerationSchema } from '../schemas/zod.schema';
 import { revalidatePath } from 'next/cache';
+import { uploadImageFromUrl } from '@/lib/cloudinary-server';
 
 // const uploadImage = async () =>
 // 	'https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg';
@@ -62,15 +63,27 @@ export async function generateHeadshotById(generationId: number) {
 	}
 
 	try {
-		const headshot = await generateSimpleHeadshot(parsedData.data);
+		const headshotUrl = await generateSimpleHeadshot(parsedData.data);
 
-		console.log('headshot', headshot);
-		if (headshot) {
-			await updateGenerationOutput(generationId, headshot);
+		console.log('[generateHeadshotById] replicateUrl:', headshotUrl);
+		if (headshotUrl) {
+			// Upload to Cloudinary first and persist the Cloudinary URL only
+			const folder = `headshot/users/${generation.userId}/output`;
+			const { secureUrl } = await uploadImageFromUrl({
+				fileUrl: headshotUrl,
+				folder,
+				publicId: `gen-${generationId}`,
+			});
+			console.log('[generateHeadshotById] cloudinary.secureUrl:', secureUrl);
+			await updateGenerationOutput(generationId, secureUrl);
+			console.log(
+				'[generateHeadshotById] DB updated with Cloudinary URL for generationId:',
+				generationId,
+			);
 			return {
 				success: 'Headshot generated successfully',
 				error: '',
-				imageUrl: headshot,
+				imageUrl: secureUrl,
 			};
 		}
 		// If we get here, generation failed but didn't throw an error

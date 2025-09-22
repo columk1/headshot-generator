@@ -1,12 +1,12 @@
-# Aragon.ai
+# BizPortraits.com
 
-**Headshot AI** is a leading AI-powered headshot generator that transforms your selfies into studio-quality portraits in minutes. Trusted by over 1.3 million professionals and teams, Aragon.ai offers a fast, affordable, and customizable solution for obtaining professional headshots without the need for traditional photoshoots.
+**BizPortraits** is a leading AI-powered headshot generator that transforms your selfies into studio-quality portraits in seconds. Trusted by many professionals and teams, BizPortraits offers a fast, affordable, and customizable solution for obtaining professional headshots without the need for traditional photoshoots.
 
 ---
 
 ## Overview
 
-Headshot AI simplifies the process of obtaining professional headshots by leveraging advanced AI algorithms. Users can upload a few photos, select preferred styles, and receive a set of high-quality headshots suitable for various professional and personal uses.
+BizPortraits simplifies the process of obtaining professional headshots by leveraging advanced AI algorithms. Users can upload a few photos, select preferred styles, and receive a set of high-quality headshots suitable for various professional and personal uses.
 
 ---
 
@@ -18,7 +18,7 @@ Headshot AI simplifies the process of obtaining professional headshots by levera
 
 - ⏱️ **Fast Turnaround**: Receive your AI-generated headshots within minutes, saving time compared to traditional photoshoots.
 
-- 🛡️ **Privacy and Security**: Headshot AI prioritizes user privacy, ensuring that your data is handled with the utmost care.
+- 🛡️ **Privacy and Security**: BizPortraits prioritizes user privacy, ensuring that your data is handled with the utmost care.
 
 ## User Flows
 
@@ -67,7 +67,7 @@ Headshot AI simplifies the process of obtaining professional headshots by levera
 
 ## Pricing
 
-Headshot AI offers various pricing tiers to accommodate different needs:
+BizPortraits offers various pricing tiers to accommodate different needs:
 
 - **Basic Package**: Starting at $10, includes a set of AI-generated headshots.
 
@@ -77,7 +77,7 @@ For detailed pricing information, visit the [Pricing Page](https://www.headshot.
 
 ## License
 
-All rights reserved by Headshot AI. Unauthorized use or distribution of the platform's content and services is prohibited.
+All rights reserved by BizPortraits. Unauthorized use or distribution of the platform's content and services is prohibited.
 
 
 

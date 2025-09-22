@@ -31,9 +31,15 @@ export const signUploadForm = async (options: uploadOptions) => {
 
 	const timestamp = Math.round(new Date().getTime() / 1000).toString();
 
+	// Enforce per-user foldering on the server (ignore client-provided folder)
+	const enforcedFolder = `headshot/users/${user.id}/input`;
+
+	const { folder: _ignoredFolder, ...restOptions } = options;
+
 	const params: Record<string, string> = {
 		timestamp,
-		...options,
+		folder: enforcedFolder,
+		...restOptions,
 	};
 
 	const apiSecret = process.env.CLOUDINARY_API_SECRET;
@@ -54,5 +60,6 @@ export const signUploadForm = async (options: uploadOptions) => {
 		timestamp: String(timestamp),
 		signature,
 		apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+		folder: enforcedFolder,
 	};
 };

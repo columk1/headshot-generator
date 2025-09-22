@@ -28,7 +28,8 @@ const ACCEPTED_IMAGE_TYPES = [
 export const simpleGenerationSchema = z.object({
 	inputImageUrl: z.string(),
 	gender: z.enum(['male', 'female']),
-	background: z.enum(['neutral', 'office', 'city', 'nature']),
+	// Must match Replicate model allowed values
+	background: z.enum(['white', 'black', 'neutral', 'gray', 'office']),
 });
 
 export type SimpleGenerationData = z.infer<typeof simpleGenerationSchema>;

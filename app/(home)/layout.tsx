@@ -117,9 +117,9 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 font-bold">
           <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
-            H
+            BP
           </div>
-          <span>HeadshotAI</span>
+          <span>BizPortraits</span>
         </Link>
 
         {showNavigation && (

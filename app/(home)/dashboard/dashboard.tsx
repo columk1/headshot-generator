@@ -27,10 +27,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 // Background options with thumbnail URLs
 const backgroundOptions = [
-  { id: 'neutral', label: 'Neutral', thumbnail: '/backgrounds/neutral.jpg' },
+  { id: 'white', label: 'White', thumbnail: '/backgrounds/white.jpg' },
+  { id: 'black', label: 'Black', thumbnail: '/backgrounds/black.jpg' },
+  { id: 'grey', label: 'Grey', thumbnail: '/backgrounds/grey.jpg' },
   { id: 'office', label: 'Office', thumbnail: '/backgrounds/office.jpg' },
-  { id: 'city', label: 'City', thumbnail: '/backgrounds/city.jpg' },
-  { id: 'nature', label: 'Nature', thumbnail: '/backgrounds/nature.jpg' },
 ];
 
 const defaultGender = 'male';
@@ -47,7 +47,7 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
   const [image, setImage] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
-  const [formOpen, setFormOpen] = useState("1");
+  const [formOpen, setFormOpen] = useState(generations.length === 0 ? "1" : "");
 
   const [generateState, generateAction, isGeneratePending] = useActionState<
     GenerationState,
@@ -83,7 +83,8 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
       setImage(optimisticUrl)
       setUploading(true)
 
-      const options = { eager: 'c_fit,h_1920,w_1920', folder: 'headshot/inputs' }
+      // Do NOT send folder from the client. The server signer enforces a per-user folder.
+      const options = { eager: 'c_fit,h_1920,w_1920' }
       const signData = await signUploadForm(options)
 
       const formData = new FormData()
@@ -91,13 +92,25 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
       formData.append('api_key', signData.apiKey)
       formData.append('timestamp', signData.timestamp)
       formData.append('signature', signData.signature)
+      // Folder must match what the server signed
+      if (signData.folder) {
+        formData.append('folder', signData.folder)
+      }
       // biome-ignore lint/complexity/noForEach: Cleaner
       Object.entries(options).forEach(([key, value]) => formData.append(key, value))
 
       const res = await fetch(IMG_UPLOAD_URL, { method: 'POST', body: formData })
+      if (!res.ok) {
+        throw new Error('Cloudinary upload failed')
+      }
       const data = await res.json()
 
-      setImageUrl(data.secure_url)
+      const secureUrl = typeof data.secure_url === 'string' ? data.secure_url : ''
+      if (!secureUrl) {
+        throw new Error('Cloudinary did not return a secure_url')
+      }
+
+      setImageUrl(secureUrl)
       setUploading(false)
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -108,6 +121,8 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
         console.error('Oops! Something went wrong. Please try again.')
       }
       setImage(null)
+      // Keep hidden input controlled
+      setImageUrl('')
       resetFileInput()
     }
   };
@@ -288,9 +303,12 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
 
         <h2 className="text-xl font-medium mb-4">Your Generations</h2>
         {error && <p className="text-red-500">{error}</p>}
-        <button type="button" onClick={() => router.refresh()}>Refresh</button>
-        <button type="button" onClick={() => router.push('/dashboard')}>Push</button>
-        <button type="button" onClick={() => revalidate()}>Revalidate</button>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => router.refresh()}>Refresh</button>
+          <button type="button" onClick={() => router.push('/dashboard')}>Push</button>
+          <button type="button" onClick={() => revalidate()}>Revalidate</button>
+          <button type="button" onClick={() => setFormOpen('')}>Collapse</button>
+        </div>
 
         {generations.length === 0 ? (
           <div className="w-full text-center text-muted-foreground">
@@ -301,7 +319,7 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
             {completedGenerations.map((gen, i) => (
               <Card key={gen.id}>
                 <CardHeader>
-                  <CardTitle>Generation #{i + 1}</CardTitle>
+                  {/* <CardTitle>Generation #{generations.length - i}</CardTitle> */}
                 </CardHeader>
                 <CardContent>
                   {gen.imageUrl ? (

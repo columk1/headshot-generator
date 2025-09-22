@@ -30,7 +30,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
               H
             </div>
-            <span>HeadshotAI</span>
+            <span>BizPortraits</span>
           </Link>
         </div>
       </header>

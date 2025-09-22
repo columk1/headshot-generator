@@ -151,7 +151,7 @@ export default function StepOptions() {
           <div>
             <h3 className="text-base font-medium mb-3">Select your background</h3>
             <div className="flex flex-wrap gap-3">
-              {["City", "Nature", "Office", "Studio"].map((value) => (
+              {["White", "Black", "Neutral", "Gray", "Office"].map((value) => (
                 <OptionButton
                   key={value}
                   value={value.toLowerCase()}
