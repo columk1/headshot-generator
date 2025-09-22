@@ -9,6 +9,7 @@ import {
 import {
 	createGeneration as createGenerationInDB,
 	getGenerationById,
+	getUser,
 	updateGenerationOutput,
 	updateGenerationStatus,
 	type GenerationStatus,
@@ -43,6 +44,46 @@ import { uploadImageFromUrl } from '@/lib/cloudinary-server';
 // );
 
 export const revalidate = async () => revalidatePath('/dashboard');
+
+// Schema for retrying a generation
+const retryGenerationSchema = z.object({
+	generationId: z.number().int().positive(),
+});
+
+/**
+ * Server action to retry a failed generation.
+ */
+export async function retryGeneration(formData: FormData) {
+	const rawId = formData.get('generationId');
+	const parsedId = Number(rawId);
+
+	const parsed = retryGenerationSchema.safeParse({ generationId: parsedId });
+	if (!parsed.success) {
+		return { error: 'Invalid generation ID', success: '' } as const;
+	}
+
+	const user = await getUser();
+	if (!user) {
+		return { error: 'Not authenticated', success: '' } as const;
+	}
+
+	const generation = await getGenerationById(parsed.data.generationId);
+	if (!generation) {
+		return { error: 'Generation not found', success: '' } as const;
+	}
+
+	if (generation.userId !== user.id) {
+		return {
+			error: 'You do not have access to this generation',
+			success: '',
+		} as const;
+	}
+
+	await updateGenerationStatus(parsed.data.generationId, 'PROCESSING');
+	void generateHeadshotById(parsed.data.generationId);
+	revalidatePath('/dashboard');
+	return { error: '', success: 'Retry started' } as const;
+}
 
 export async function generateHeadshotById(generationId: number) {
 	const generation = await getGenerationById(generationId);

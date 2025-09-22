@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Generation type matching the one used in the dashboard component
 export type Generation = {
@@ -37,6 +37,7 @@ export function useGenerationPolling(
 	options: UseGenerationPollingOptions = {},
 ): UseGenerationPollingResult {
 	const [pollingStatus, setPollingStatus] = useState<string | null>(null);
+	const latestStatusRef = useRef<string | null>(null);
 	const { pollingInterval = 5000 } = options;
 	const router = useRouter();
 
@@ -75,6 +76,7 @@ export function useGenerationPolling(
 				}
 
 				// Update UI with current status
+				latestStatusRef.current = data.status;
 				setPollingStatus(`Generation status: ${data.status}`);
 
 				// Return true only if we should continue polling
@@ -90,7 +92,11 @@ export function useGenerationPolling(
 		 * Handle the end of polling, whether due to completion or error
 		 */
 		const handlePollingEnd = (): void => {
-			setPollingStatus('Generation completed.');
+			const doneMessage =
+				latestStatusRef.current === 'FAILED'
+					? 'Generation failed.'
+					: 'Generation completed.';
+			setPollingStatus(doneMessage);
 
 			setTimeout(() => {
 				setPollingStatus(null);

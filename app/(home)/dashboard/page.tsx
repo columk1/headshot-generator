@@ -11,7 +11,7 @@ export default async function DashboardPage({
 
   // const completedGenerations = generations.filter(g => g.status === 'COMPLETED');
 
-  const pendingGeneration = generations?.[0]?.status === 'PROCESSING' ? generations?.[0] : null;
+  const pendingGeneration = generations.find((g) => g.status === 'PROCESSING') ?? null;
 
   return <Dashboard
     generations={generations}

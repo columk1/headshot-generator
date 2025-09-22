@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { downloadImage } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { CircleCheck } from 'lucide-react';
+import { CircleCheck, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoaderCircle } from 'lucide-react';
 import { useActionState, useRef, useState, useEffect, useCallback } from 'react';
@@ -24,6 +24,7 @@ import type { ReactElement } from 'react';
 import { useGenerationPolling, type Generation } from '@/hooks/use-generation-polling';
 import { revalidate } from '@/lib/ai/actions';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { retryGeneration } from '@/lib/ai/actions';
 
 // Background options with thumbnail URLs
 const backgroundOptions = [
@@ -43,6 +44,7 @@ type GenerationState = ActionState & {
 export function Dashboard({ generations, pendingGeneration }: { generations: Generation[]; pendingGeneration: Generation | null }): ReactElement {
   // const [generations, setGenerations] = useState<Generation[]>(initialGenerations);
   const completedGenerations = generations.filter(g => g.status === 'COMPLETED');
+  const failedGenerations = generations.filter(g => g.status === 'FAILED');
   const [error, setError] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
@@ -62,6 +64,10 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
   const router = useRouter();
 
   const { pollingStatus } = useGenerationPolling(pendingGeneration);
+
+  async function handleRetry(formData: FormData): Promise<void> {
+    await retryGeneration(formData);
+  }
 
   const handleUploadButtonClick = (): void => {
     fileInputRef.current?.click();
@@ -353,6 +359,43 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
                 </CardContent>
               </Card>
             ))}
+          </div>
+        )}
+
+        {failedGenerations.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-lg font-medium mb-3">Failed generations</h3>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {failedGenerations.map((gen) => (
+                <Card key={`failed-${gen.id}`} className="border-destructive/30">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base flex items-center gap-2 text-destructive">
+                      <AlertTriangle className="size-4" />
+                      Generation failed
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="w-full aspect-square bg-muted flex items-center justify-center rounded">
+                      <p className="text-muted-foreground text-sm">No image generated</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Something went wrong while generating your headshot. You can retry now, or contact support and we’ll help you out.
+                    </p>
+                    <div className="flex gap-2">
+                      <form action={handleRetry} className="flex-1">
+                        <input type="hidden" name="generationId" value={gen.id} />
+                        <Button type="submit" className="w-full">Retry</Button>
+                      </form>
+                      <Button asChild variant="outline">
+                        <a href="mailto:support@bizportraits.com?subject=Headshot%20generation%20failed&body=Generation%20ID%3A%20" aria-label="Contact support">
+                          Contact support
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         )}
       </div>

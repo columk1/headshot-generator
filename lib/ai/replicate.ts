@@ -1,6 +1,6 @@
 import Replicate, { type FileOutput } from 'replicate';
-import { promises as fs } from 'node:fs';
-import { revalidatePath } from 'next/cache';
+// import { promises as fs } from 'node:fs';
+// import { revalidatePath } from 'next/cache';
 
 export const replicate = new Replicate({
 	auth: process.env.REPLICATE_API_TOKEN,
@@ -31,9 +31,9 @@ export const generateSimpleHeadshot = async (
 	)) as FileOutput;
 	console.log(output);
 
-	const blob = await output.blob();
-	const buffer = Buffer.from(await blob.arrayBuffer());
-	await fs.writeFile('output.png', buffer);
+	// const blob = await output.blob();
+	// const buffer = Buffer.from(await blob.arrayBuffer());
+	// await fs.writeFile('output.png', buffer);
 	return output.url().href;
 };
 
