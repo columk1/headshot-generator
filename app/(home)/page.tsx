@@ -4,6 +4,9 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import Autoplay from "embla-carousel-autoplay"
+import Fade from "embla-carousel-fade"
+
 import {
   Check,
   ChevronRight,
@@ -24,6 +27,8 @@ import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, CarouselDots } from "@/components/ui/carousel"
+import { BeforeAfter } from "@/components/ui/before-after"
 
 
 export default function LandingPage() {
@@ -87,7 +92,7 @@ export default function LandingPage() {
     <div className="flex flex-col">
       <main className="flex-1 m-auto">
         {/* Hero Section */}
-        <section className="w-full py-20 md:py-32 lg:py-40 overflow-hidden">
+        <section className="w-full py-20 md:pt-32 overflow-hidden">
           <div className="container px-4 md:px-6 relative">
             {/* Grid lines background */}
             <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
@@ -139,16 +144,24 @@ export default function LandingPage() {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="relative mx-auto max-w-5xl"
             >
-              <div className="rounded-xl overflow-hidden shadow-2xl border border-border/40 bg-gradient-to-b from-background to-muted/20">
-                <Image
-                  src="https://cloudinary.com/og.png"
-                  width={1280}
-                  height={720}
-                  alt="HeadshotAI dashboard"
-                  className="w-full h-auto"
-                  priority
-                />
-                <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/10 dark:ring-white/10" />
+              <div className="max-w-lg m-auto">
+                <div className="rounded-xl shadow-2xl border border-border/40 bg-gradient-to-b from-background to-muted/20">
+                  {/* <BeforeAfter beforeImage="https://www.shutterstock.com/image-photo/handsome-caucasican-guy-taking-selfie-600nw-1802109742.jpg" afterImage="https://tinyurl.com/2vube5ps" /> */}
+                  <Carousel
+                    plugins={[Autoplay({ delay: 3000, stopOnMouseEnter: true }), Fade()]}
+                  >
+                    <CarouselContent>
+                      <CarouselItem><BeforeAfter beforeImage="images/before-after-01a.jpg" afterImage="images/before-after-01b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/before-after-02a.jpg" afterImage="images/before-after-02b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/before-after-03a.jpg" afterImage="images/before-after-03b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/before-after-04a.jpg" afterImage="images/before-after-04b.jpg" /></CarouselItem>
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                    {/* <CarouselDots /> */}
+                  </Carousel>
+                </div>
+                {/* <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/10 dark:ring-white/10" /> */}
               </div>
               <div className="absolute -bottom-6 -right-6 -z-10 h-[300px] w-[300px] rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 blur-3xl opacity-70" />
               <div className="absolute -top-6 -left-6 -z-10 h-[300px] w-[300px] rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 blur-3xl opacity-70" />
@@ -178,7 +191,7 @@ export default function LandingPage() {
         </section> */}
 
         {/* Features Section */}
-        <section id="features" className="w-full py-20 md:py-32">
+        <section id="features" className="w-full py-20">
           <div className="container px-4 md:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -222,7 +235,7 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="w-full py-20 md:py-32 bg-muted/30 relative overflow-hidden">
+        <section id="how-it-works" className="w-full py-20 bg-muted/30 relative overflow-hidden">
           <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)]" />
 
           <div className="container px-4 md:px-6 relative">
