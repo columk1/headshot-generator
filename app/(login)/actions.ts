@@ -12,6 +12,7 @@ import {
 	ActivityType,
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
+import { deleteUserFolder } from '@/lib/cloudinary-server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
@@ -207,6 +208,13 @@ export const deleteAccount = validatedActionWithUser(
 		}
 
 		await logActivity(user.id, ActivityType.DELETE_ACCOUNT);
+
+		// Best-effort Cloudinary cleanup; do not block deletion on Cloudinary errors
+		try {
+			await deleteUserFolder(user.id);
+		} catch (err) {
+			console.error('[deleteAccount] Cloudinary cleanup failed', { userId: user.id, err });
+		}
 
 		// Soft delete
 		await db

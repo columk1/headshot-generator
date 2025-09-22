@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { downloadImage } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { CircleCheck, AlertTriangle } from 'lucide-react';
+import { CircleCheck, AlertTriangle, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoaderCircle } from 'lucide-react';
 import { useActionState, useRef, useState, useEffect, useCallback } from 'react';
@@ -28,10 +28,10 @@ import { retryGeneration } from '@/lib/ai/actions';
 
 // Background options with thumbnail URLs
 const backgroundOptions = [
-  { id: 'white', label: 'White', thumbnail: '/backgrounds/white.jpg' },
-  { id: 'black', label: 'Black', thumbnail: '/backgrounds/black.jpg' },
-  { id: 'grey', label: 'Grey', thumbnail: '/backgrounds/grey.jpg' },
-  { id: 'office', label: 'Office', thumbnail: '/backgrounds/office.jpg' },
+  { id: 'white', label: 'White', thumbnail: '/images/bg-white.jpg' },
+  { id: 'black', label: 'Black', thumbnail: '/images/bg-black.jpg' },
+  { id: 'gray', label: 'Gray', thumbnail: '/images/bg-gray.jpg' },
+  { id: 'office', label: 'Office', thumbnail: '/images/bg-office.jpg' },
 ];
 
 const defaultGender = 'male';
@@ -162,133 +162,156 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
             </CardHeader>
             <AccordionContent>
               <CardContent>
-                <form action={generateAction} className="space-y-6">
-                  {/* Image Upload Section */}
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="block text-sm font-medium mb-2">Upload Your Photo</Label>
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-32 w-32 rounded-md border-2 border-dashed border-gray-300 dark:border-gray-700 overflow-hidden">
-                          {image ? (
-                            <img
-                              src={image}
-                              alt="Preview"
-                              className="h-full w-full object-cover"
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <form action={generateAction} className="space-y-6 lg:col-span-2">
+                    {/* Image Upload Section */}
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="block text-sm font-medium mb-2">Upload Your Photo</Label>
+                        <div className="flex items-center gap-4">
+                          <div className="relative h-32 w-32 rounded-md border-2 border-dashed border-gray-300 dark:border-gray-700 overflow-hidden">
+                            {image ? (
+                              <img
+                                src={image}
+                                alt="Preview"
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                                <span className="text-xs text-gray-500 dark:text-gray-400">Preview</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="space-y-2 flex flex-col items-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={handleUploadButtonClick}
+                              disabled={uploading}
+                              className="gap-2 min-w-28"
+                            >
+                              {uploading ? (
+                                <LoaderCircle className="size-4 animate-spin text-white" />
+                              ) : 'Choose File'}
+                            </Button>
+                            <p className="text-xs text-muted-foreground">
+                              {image && !uploading ? <CircleCheck className="h-5 w-5 text-primary" /> : uploading ? 'Analyzing...' : 'JPG or PNG, max 10MB'}
+                            </p>
+                            <Input
+                              type="file"
+                              ref={fileInputRef}
+                              onChange={handleFileChange}
+                              accept="image/*"
+                              className="hidden"
                             />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
-                              <span className="text-xs text-gray-500 dark:text-gray-400">Preview</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="space-y-2 flex flex-col items-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleUploadButtonClick}
-                            disabled={uploading}
-                            className="gap-2 min-w-28"
-                          >
-                            {uploading ? (
-                              <LoaderCircle className="size-4 animate-spin text-white" />
-                            ) : 'Choose File'}
-                          </Button>
-                          <p className="text-xs text-muted-foreground">
-                            {image && !uploading ? <CircleCheck className="h-5 w-5 text-primary" /> : uploading ? 'Analyzing...' : 'JPG or PNG, max 10MB'}
-                          </p>
-                          <Input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            className="hidden"
-                          />
-                          <Input type="hidden" name="inputImageUrl" value={imageUrl} />
+                            <Input type="hidden" name="inputImageUrl" value={imageUrl} />
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Gender Selection */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium block mb-2">Gender</Label>
-                      <RadioGroup
-                        name="gender"
-                        defaultValue={defaultGender}
-                        className="flex gap-3 w-fit"
-                      >
-                        <div>
-                          <RadioGroupItem
-                            value="male"
-                            id="male"
-                            className="peer sr-only"
-                          />
-                          <Label
-                            htmlFor="male"
-                            className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                          >
-                            <span className="font-medium">Male</span>
-                          </Label>
-                        </div>
-                        <div>
-                          <RadioGroupItem
-                            value="female"
-                            id="female"
-                            className="peer sr-only"
-                          />
-                          <Label
-                            htmlFor="female"
-                            className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                          >
-                            <span className="font-medium">Female</span>
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {/* Background Selection */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium block mb-2">Background Style</Label>
-                      <RadioGroup
-                        name="background"
-                        defaultValue={defaultBackground}
-                        className="grid grid-cols-4 gap-3 w-full"
-                      >
-                        {backgroundOptions.map((option) => (
-                          <div key={option.id}>
+                      {/* Gender Selection */}
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium block mb-2">Gender</Label>
+                        <RadioGroup
+                          name="gender"
+                          defaultValue={defaultGender}
+                          className="flex gap-3 w-fit"
+                        >
+                          <div>
                             <RadioGroupItem
-                              value={option.id}
-                              id={option.id}
+                              value="male"
+                              id="male"
                               className="peer sr-only"
                             />
                             <Label
-                              htmlFor={option.id}
-                              className="flex flex-col items-center justify-between rounded-lg border border-muted bg-popover p-2 hover:bg-black/25 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full"
+                              htmlFor="male"
+                              className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                             >
-                              <div className="w-full aspect-square bg-muted rounded-lg overflow-hidden">
-                                <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center text-xs text-muted-foreground">
-                                  {option.label}
-                                </div>
-                              </div>
-                              <span className="text-sm font-medium">{option.label}</span>
+                              <span className="font-medium">Male</span>
                             </Label>
                           </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                    <Input type="hidden" name="product" value="headshotBasic" />
+                          <div>
+                            <RadioGroupItem
+                              value="female"
+                              id="female"
+                              className="peer sr-only"
+                            />
+                            <Label
+                              htmlFor="female"
+                              className="flex items-center justify-center rounded-md border border-muted bg-popover px-6 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                            >
+                              <span className="font-medium">Female</span>
+                            </Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
 
-                    {/* Submit Button */}
-                    <div className="pt-2">
-                      <Button
-                        type="submit"
-                        disabled={!imageUrl || uploading || isGeneratePending}
-                        className="w-full"
-                      >
-                        {isGeneratePending ? <LoaderCircle className="size-4 animate-spin text-white" /> : 'Generate'}
-                      </Button>
+                      {/* Background Selection */}
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium block mb-2">Background Style</Label>
+                        <RadioGroup
+                          name="background"
+                          defaultValue={defaultBackground}
+                          className="grid grid-cols-4 gap-3 w-full"
+                        >
+                          {backgroundOptions.map((option) => (
+                            <div key={option.id}>
+                              <RadioGroupItem
+                                value={option.id}
+                                id={option.id}
+                                className="peer sr-only"
+                              />
+                              <Label
+                                htmlFor={option.id}
+                                className="flex flex-col items-center justify-between rounded-lg border border-muted bg-muted/30 p-2 hover:bg-black/25 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full"
+                              >
+                                <div className="w-full aspect-square rounded-lg overflow-hidden">
+                                  {option.thumbnail ? (
+                                    <img
+                                      src={option.thumbnail}
+                                      alt={`${option.label} background`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center text-xs text-muted-foreground">
+                                      {option.label}
+                                    </div>
+                                  )}
+                                </div>
+                                <span className="text-sm font-medium pt-1">{option.label}</span>
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      </div>
+                      <Input type="hidden" name="product" value="headshotBasic" />
+
+                      {/* Submit Button */}
+                      <div className="pt-2">
+                        <Button
+                          type="submit"
+                          disabled={!imageUrl || uploading || isGeneratePending}
+                          className="w-full"
+                        >
+                          {isGeneratePending ? <LoaderCircle className="size-4 animate-spin text-white" /> : 'Generate'}
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </form>
+                  </form>
+
+                  {/* Tips Aside */}
+                  <aside className="rounded-lg border bg-muted/30 p-4 lg:p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Info className="size-4 text-primary" aria-hidden="true" />
+                      <h3 className="text-sm font-medium">Upload tips</h3>
+                    </div>
+                    <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-2">
+                      <li>Well-lit selfies from chest/waist up taken at eye-level, work best.</li>
+                      <li>Avoid low-quality or AI-generated images, revealing clothes, accessories, or unnatural angles.</li>
+                      <li>Use recent photos (within the last 6 months) with a hairstyle and length similar to what you want in your headshot.</li>
+                    </ul>
+                  </aside>
+                </div>
               </CardContent>
             </AccordionContent>
           </AccordionItem>
@@ -309,16 +332,16 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
 
         <h2 className="text-xl font-medium mb-4">Your Generations</h2>
         {error && <p className="text-red-500">{error}</p>}
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <button type="button" onClick={() => router.refresh()}>Refresh</button>
           <button type="button" onClick={() => router.push('/dashboard')}>Push</button>
           <button type="button" onClick={() => revalidate()}>Revalidate</button>
           <button type="button" onClick={() => setFormOpen('')}>Collapse</button>
-        </div>
+        </div> */}
 
         {generations.length === 0 ? (
           <div className="w-full text-center text-muted-foreground">
-            No generations yet. Start a new one!
+            No generations yet. Upload a photo to get started!
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

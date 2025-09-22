@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,7 @@ type ActionState = {
   success?: string;
 };
 
-export default function SecurityPage() {
+export default function AccountPage() {
   const [passwordState, passwordAction, isPasswordPending] = useActionState<
     ActionState,
     FormData
@@ -28,13 +28,6 @@ export default function SecurityPage() {
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
-    // If you call the Server Action directly, it will automatically
-    // reset the form. We don't want that here, because we want to keep the
-    // client-side values in the inputs. So instead, we use an event handler
-    // which calls the action. You must wrap direct calls with startTransition.
-    // When you use the `action` prop it automatically handles that for you.
-    // Another option here is to persist the values to local storage. I might
-    // explore alternative options.
     startTransition(() => {
       passwordAction(new FormData(event.currentTarget));
     });
@@ -51,8 +44,8 @@ export default function SecurityPage() {
 
   return (
     <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium bold text-gray-900 mb-6">
-        Security Settings
+      <h1 className="text-lg lg:text-2xl font-medium bold text-primary-text mb-6">
+        Account
       </h1>
       <Card className="mb-8">
         <CardHeader>

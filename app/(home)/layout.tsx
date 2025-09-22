@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
 import { Suspense, use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Users, Settings, Shield, Activity, Menu, Home, LogOut, CircleIcon, Sun, Moon, ChevronRight, X } from 'lucide-react';
+import { Users, UserCog, Shield, Activity, Menu, Home, LogOut, CircleIcon, Sun, Moon, ChevronRight, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signOut } from '@/app/(login)/actions'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -49,35 +49,43 @@ function UserMenu() {
   }
 
   return (
-    <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-      <DropdownMenuTrigger className="rounded-full">
-        <Avatar className="cursor-pointer">
-          <AvatarImage alt={user.email || ''} className="" />
-          <AvatarFallback className="bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
-            {user.email
-              .split(' ')
-              .map((n) => n[0])
-              .join('')}
-          </AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="flex flex-col gap-1 bg-card">
-        <DropdownMenuItem className="cursor-pointer">
-          <Link href="/dashboard" className="flex w-full items-center">
-            <Home className="mr-2 h-4 w-4" />
-            <span>Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
-        <form action={handleSignOut} className="w-full">
-          <button type="submit" className="flex w-full">
-            <DropdownMenuItem className="w-full flex-1 cursor-pointer">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Sign out</span>
-            </DropdownMenuItem>
-          </button>
-        </form>
-      </DropdownMenuContent>
-    </DropdownMenu >
+    <>
+      <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <DropdownMenuTrigger className="rounded-full">
+          <Avatar className="cursor-pointer">
+            <AvatarImage alt={user.email || ''} className="" />
+            <AvatarFallback className="bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
+              {user.email
+                .split(' ')
+                .map((n) => n[0])
+                .join('')}
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="flex flex-col gap-1 bg-card">
+          <DropdownMenuItem className="cursor-pointer">
+            <Link href="/dashboard" className="flex w-full items-center">
+              <Home className="mr-2 h-4 w-4" />
+              <span>Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">
+            <Link href="/account" className="flex w-full items-center">
+              <UserCog className="mr-2 h-4 w-4" />
+              <span>Account</span>
+            </Link>
+          </DropdownMenuItem>
+          <form action={handleSignOut} className="w-full">
+            <button type="submit" className="flex w-full">
+              <DropdownMenuItem className="w-full flex-1 cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sign out</span>
+              </DropdownMenuItem>
+            </button>
+          </form>
+        </DropdownMenuContent>
+      </DropdownMenu >
+    </>
   );
 }
 

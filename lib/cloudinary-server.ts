@@ -65,3 +65,64 @@ export async function uploadImageFromUrl(params: UploadFromUrlParams): Promise<U
   // Fallback (should be unreachable)
   throw new Error('Cloudinary upload failed after retries')
 }
+
+// Deletes all resources in a user's folder and then deletes the folders themselves
+export async function deleteUserFolder(userId: number): Promise<void> {
+  getCloudinaryConfig()
+
+  const basePrefix = `headshot/users/${userId}`
+  const prefixes = [
+    `${basePrefix}/input`,
+    `${basePrefix}/output`,
+    basePrefix,
+  ] as const
+
+  async function deleteByPrefix(prefix: string): Promise<void> {
+    // Paginate through resources and delete by prefix
+    let nextCursor: string | undefined
+    // Loop to ensure all resources matching the prefix are deleted
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const res: unknown = await cloudinary.api.delete_resources_by_prefix(prefix, {
+        // cloudinary admin api typings are loose; specify known fields explicitly
+        resource_type: 'image',
+        type: 'upload',
+        next_cursor: nextCursor as string | undefined,
+      } as unknown as {
+        resource_type?: string
+        type?: string
+        next_cursor?: string
+      })
+      // Extract next_cursor in a type-safe way
+      const { next_cursor } = (res as { next_cursor?: string })
+      nextCursor = next_cursor
+      if (!nextCursor) break
+    }
+  }
+
+  // Delete resources in input and output first
+  for (const p of prefixes) {
+    try {
+      await deleteByPrefix(p)
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Cloudinary delete by prefix error', { prefix: p, err })
+    }
+  }
+
+  // Then attempt to delete folders (child folders before parent)
+  const foldersInDeleteOrder = [
+    `${basePrefix}/input`,
+    `${basePrefix}/output`,
+    basePrefix,
+  ]
+  for (const folder of foldersInDeleteOrder) {
+    try {
+      await cloudinary.api.delete_folder(folder)
+    } catch (err) {
+      // Folder may not be empty or may not exist; log and continue
+      // eslint-disable-next-line no-console
+      console.warn('Cloudinary delete folder warning', { folder, err })
+    }
+  }
+}
