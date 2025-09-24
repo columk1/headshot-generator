@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { redirect } from 'next/navigation';
+import { getBaseUrl } from '@/lib/url';
 import type { User } from '@/lib/db/schema';
 import {
 	getUserByStripeCustomerId,
@@ -10,7 +11,7 @@ import {
 import { generateHeadshotById } from '../ai/actions';
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
-	apiVersion: '2025-02-24.acacia',
+	apiVersion: '2025-08-27.basil',
 });
 
 export async function createCheckoutSession({
@@ -39,6 +40,8 @@ export async function createCheckoutSession({
 		await updateUserStripeCustomerId(user.id, stripeCustomerId);
 	}
 
+	const baseUrl = await getBaseUrl();
+
 	const session = await stripe.checkout.sessions.create({
 		payment_method_types: ['card'],
 		line_items: [
@@ -48,8 +51,8 @@ export async function createCheckoutSession({
 			},
 		],
 		mode: 'payment',
-		success_url: `${process.env.BASE_URL}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
-		cancel_url: `${process.env.BASE_URL}/generate?generationId=${generationId}`,
+		success_url: `${baseUrl}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
+		cancel_url: `${baseUrl}/generate?generationId=${generationId}`,
 		customer: stripeCustomerId,
 		client_reference_id: user.id.toString(),
 		allow_promotion_codes: true,
