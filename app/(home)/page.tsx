@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, CarouselDots } from "@/components/ui/carousel"
 import { BeforeAfter } from "@/components/ui/before-after"
+import { Logo } from "@/components/ui/logo"
 
 
 export default function LandingPage() {
@@ -641,7 +642,7 @@ export default function LandingPage() {
         <div className="container flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16 m-auto">
           <div className="flex flex-col items-center gap-8 m-auto">
             <div className="flex items-center gap-0.5 font-bold">
-              <img src='/images/logo.svg' alt='BizPortraits' className='size-8' />
+              <Logo title='BizPortraits' className='size-8' />
               <span>BizPortraits</span>
             </div>
             <ul className="flex gap-4 text-sm">

@@ -11,6 +11,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useTheme } from 'next-themes';
 import { useUser } from '@/lib/auth';
+import { Logo } from '@/components/ui/logo';
 
 // Shared UserMenu component that displays different content based on authentication status
 function UserMenu() {
@@ -124,7 +125,8 @@ function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-0.5 font-bold">
-          <img src='/images/logo.svg' alt='BizPortraits' className='size-8' />
+          <Logo title='BizPortraits' className='size-8' />
+          {/* <img src='/images/logo.svg' alt='BizPortraits' className='size-8' /> */}
           <span>BizPortraits</span>
         </Link>
 
