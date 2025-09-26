@@ -95,7 +95,7 @@ export default function LandingPage() {
         <section className="w-full py-20 md:pt-32 overflow-hidden">
           <div className="container px-4 md:px-6 relative">
             {/* Grid lines background */}
-            <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+            <div className="absolute -mt-10 inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -640,10 +640,8 @@ export default function LandingPage() {
       <footer className="w-full border-t bg-background/95 backdrop-blur-sm">
         <div className="container flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16 m-auto">
           <div className="flex flex-col items-center gap-8 m-auto">
-            <div className="flex items-center gap-2 font-bold">
-              <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
-                H
-              </div>
+            <div className="flex items-center gap-0.5 font-bold">
+              <img src='/images/logo.svg' alt='BizPortraits' className='size-8' />
               <span>BizPortraits</span>
             </div>
             <ul className="flex gap-4 text-sm">

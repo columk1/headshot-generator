@@ -123,10 +123,8 @@ function Header() {
       className={`sticky top-0 pt-2 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"} border-b border-border`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center gap-2 font-bold">
-          <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
-            BP
-          </div>
+        <Link href="/" className="flex items-center gap-0.5 font-bold">
+          <img src='/images/logo.svg' alt='BizPortraits' className='size-8' />
           <span>BizPortraits</span>
         </Link>
 
@@ -166,7 +164,7 @@ function Header() {
         )}
 
         <div className="flex items-center space-x-4">
-          {showNavigation && mounted && (
+          {mounted && (
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
               {theme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
               <span className="sr-only">Toggle theme</span>

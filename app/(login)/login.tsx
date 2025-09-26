@@ -25,11 +25,9 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-muted/30">
       <header className="fixed top-0 pt-2.5 w-full">
-        <div className="max-w-7xl mx-auto py-4 flex justify-between items-center px-6">
-          <Link href="/" className="flex items-center gap-2 font-bold">
-            <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
-              H
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-0.5 font-bold">
+            <img src='/images/logo.svg' alt='BizPortraits' className='size-8' />
             <span>BizPortraits</span>
           </Link>
         </div>
