@@ -213,7 +213,10 @@ export const deleteAccount = validatedActionWithUser(
 		try {
 			await deleteUserFolder(user.id);
 		} catch (err) {
-			console.error('[deleteAccount] Cloudinary cleanup failed', { userId: user.id, err });
+			console.error('[deleteAccount] Cloudinary cleanup failed', {
+				userId: user.id,
+				err,
+			});
 		}
 
 		// Soft delete
