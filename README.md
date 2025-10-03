@@ -51,11 +51,11 @@ BizPortraits simplifies the process of obtaining professional headshots by lever
 
 ## Getting Started
 
-1. **Visit Headshot.ai**: Navigate to https://headshot.ai.
+1. **Visit BizPortraits**: Navigate to https://bizportraits.com.
 
 2. **Create an Account**: Sign up with your email address.
 
-3. **Upload Photos**: Provide at least 6 high-quality selfies.
+3. **Upload Photos**: Provide at least 1 high-quality selfie.
 
 4. **Customize**: Select your preferred styles and backgrounds.
 
@@ -71,7 +71,7 @@ BizPortraits offers various pricing tiers to accommodate different needs:
 
 - **Basic Package**: Starting at $10, includes a set of AI-generated headshots.
 
-For detailed pricing information, visit the [Pricing Page](https://www.headshot.ai/pricing).
+For detailed pricing information, visit the [Pricing Page](https://bizportraits.com/pricing).
 
 ---
 
@@ -92,8 +92,8 @@ All rights reserved by BizPortraits. Unauthorized use or distribution of the pla
 ## Getting Started
 
 ```bash
-git clone https://github.com/nextjs/saas-starter
-cd saas-starter
+git clone https://github.com/columk1/headshot-generator.git
+cd headshot-generator
 pnpm install
 ```
 
@@ -164,5 +164,5 @@ In your Vercel project settings (or during deployment), add all the necessary en
 1. `BASE_URL`: Set this to your production domain.
 2. `STRIPE_SECRET_KEY`: Use your Stripe secret key for the production environment.
 3. `STRIPE_WEBHOOK_SECRET`: Use the webhook secret from the production webhook you created in step 1.
-4. `POSTGRES_URL`: Set this to your production database URL.
+4. `DATABASE_URL`: Set this to your production database URL (Turso libSQL).
 5. `AUTH_SECRET`: Set this to a random string. `openssl rand -base64 32` will generate one.

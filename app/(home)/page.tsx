@@ -154,10 +154,12 @@ export default function LandingPage() {
                     plugins={[Autoplay({ delay: 3000, stopOnMouseEnter: true }), Fade()]}
                   >
                     <CarouselContent>
-                      <CarouselItem><BeforeAfter beforeImage="images/before-after-01a.jpg" afterImage="images/before-after-01b.jpg" /></CarouselItem>
-                      <CarouselItem><BeforeAfter beforeImage="images/before-after-02a.jpg" afterImage="images/before-after-02b.jpg" /></CarouselItem>
-                      <CarouselItem><BeforeAfter beforeImage="images/before-after-03a.jpg" afterImage="images/before-after-03b.jpg" /></CarouselItem>
-                      <CarouselItem><BeforeAfter beforeImage="images/before-after-04a.jpg" afterImage="images/before-after-04b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/ba-01a.jpg" afterImage="images/ba-01b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/ba-02a.jpg" afterImage="images/ba-02b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/ba-03a.jpg" afterImage="images/ba-03b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/ba-04a.jpg" afterImage="images/ba-04b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/ba-05a.jpg" afterImage="images/ba-05b.jpg" /></CarouselItem>
+                      <CarouselItem><BeforeAfter beforeImage="images/ba-06a.jpg" afterImage="images/ba-06b.jpg" /></CarouselItem>
                     </CarouselContent>
                     <CarouselPrevious />
                     <CarouselNext />
