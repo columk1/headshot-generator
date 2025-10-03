@@ -105,7 +105,7 @@ export default function LandingPage() {
               className="text-center max-w-3xl mx-auto mb-12"
             >
               <Badge className="mb-4 rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
-                Launching Soon
+                Available Now
               </Badge>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
                 Professional Headshots in Minutes
@@ -148,7 +148,7 @@ export default function LandingPage() {
               className="relative mx-auto max-w-5xl"
             >
               <div className="max-w-lg m-auto">
-                <div className="rounded-xl shadow-2xl border border-border/40 bg-gradient-to-b from-background to-muted/20">
+                <div className="rounded-xl shadow-2xl p-2 border border-border/40 bg-gradient-to-b from-background to-muted/20">
                   {/* <BeforeAfter beforeImage="https://www.shutterstock.com/image-photo/handsome-caucasican-guy-taking-selfie-600nw-1802109742.jpg" afterImage="https://tinyurl.com/2vube5ps" /> */}
                   <Carousel
                     plugins={[Autoplay({ delay: 3000, stopOnMouseEnter: true }), Fade()]}
@@ -638,10 +638,10 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-      <footer className="w-full border-t bg-background/95 backdrop-blur-sm">
-        <div className="container flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16 m-auto">
+      <div className="w-full border-t bg-background/95 backdrop-blur-sm">
+        <div className="container flex flex-col gap-8 px-4 pt-10 pb-5 md:px-6 lg:pt-16 m-auto">
           <div className="flex flex-col items-center gap-8 m-auto">
-            <div className="flex items-center gap-0.5 font-bold">
+            <div className="flex items-center gap-1 font-bold">
               <Logo title='BizPortraits' className='size-8' />
               <span>BizPortraits</span>
             </div>
@@ -673,25 +673,8 @@ export default function LandingPage() {
               </li>
             </ul>
           </div>
-          <div className="flex gap-4 justify-between border-t border-border/40 pt-8">
-            <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} BizPortraits. All rights reserved.
-            </p>
-            <ul className="flex gap-4 text-xs">
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-            </ul>
-          </div>
         </div>
-      </footer>
+      </div>
     </div>
   )
 }

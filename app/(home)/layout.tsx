@@ -124,9 +124,8 @@ function Header() {
       className={`sticky top-0 pt-2 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"} border-b border-border`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center gap-0.5 font-bold">
+        <Link href="/" className="flex items-center gap-1 font-bold">
           <Logo title='BizPortraits' className='size-8' />
-          {/* <img src='/images/logo.svg' alt='BizPortraits' className='size-8' /> */}
           <span>BizPortraits</span>
         </Link>
 
@@ -212,6 +211,32 @@ function Header() {
   );
 }
 
+function Footer() {
+  return (
+    <footer className="w-full bg-background/95 backdrop-blur-sm">
+      <div className="container flex flex-col gap-8 px-4 py-8 md:px-6 lg:py-12 m-auto">
+        <div className="flex gap-4 justify-between border-t border-border/40 pt-8">
+          <p className="text-xs text-muted-foreground">
+            &copy; {new Date().getFullYear()} BizPortraits. All rights reserved.
+          </p>
+          <ul className="flex gap-4 text-xs">
+            <li>
+              <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
+                Terms of Service
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
 export default function HomeLayout({
   children,
 }: {
@@ -222,6 +247,7 @@ export default function HomeLayout({
       <Header />
       {/* Main content */}
       <main className="flex-1 overflow-y-auto max-w-7xl mx-auto w-full">{children}</main>
+      <Footer />
     </div>
   );
 }

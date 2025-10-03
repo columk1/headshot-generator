@@ -19,8 +19,8 @@ export function BeforeAfter({
     <div className={`flex items-center gap-8 ${className}`}>
       {/* Before Image */}
       <div className="relative">
-        <div className="relative overflow-hidden rounded-3xl">
-          <img src={beforeImage || "/placeholder.svg"} alt={beforeAlt} className="h-80 w-64 rounded-3xl object-cover" />
+        <div className="relative overflow-hidden rounded-lg">
+          <img src={beforeImage || "/placeholder.svg"} alt={beforeAlt} className="h-80 w-64 rounded-lg object-cover" />
           <div className="absolute left-4 top-4 rounded-full bg-black/70 px-3 py-1">
             <span className="text-sm font-medium text-white">Before</span>
           </div>
@@ -34,8 +34,8 @@ export function BeforeAfter({
 
       {/* After Image */}
       <div className="relative">
-        <div className="relative overflow-hidden rounded-3xl">
-          <img src={afterImage || "/placeholder.svg"} alt={afterAlt} className="h-80 w-64 rounded-3xl object-cover" />
+        <div className="relative overflow-hidden rounded-lg">
+          <img src={afterImage || "/placeholder.svg"} alt={afterAlt} className="h-80 w-64 rounded-lg object-cover" />
           <div className="absolute right-4 top-4 rounded-full bg-black/70 px-3 py-1">
             <span className="text-sm font-medium text-white">After</span>
           </div>
