@@ -86,8 +86,17 @@ export async function POST(request: NextRequest) {
 			}
 			// generate image after the response has been sent
 			after(async () => {
-				await processCheckoutSession(stripe, session);
-				revalidatePath('/dashboard');
+				try {
+					await processCheckoutSession(stripe, session);
+					revalidatePath('/dashboard');
+				} catch (error) {
+					console.error(
+						'Error in after() during image generation:',
+						error,
+					);
+					// Error is logged but generation should already be marked as FAILED
+					// by the internal error handling in processCheckoutSession/generateHeadshotById
+				}
 			});
 			break;
 		}

@@ -65,8 +65,21 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
 
   const { pollingStatus } = useGenerationPolling(pendingGeneration);
 
+  const [retryError, setRetryError] = useState<Record<number, string>>({});
+
   async function handleRetry(formData: FormData): Promise<void> {
-    await retryGeneration(formData);
+    const result = await retryGeneration(formData);
+    const generationId = Number(formData.get('generationId'));
+    
+    if (result.error) {
+      setRetryError(prev => ({ ...prev, [generationId]: result.error }));
+    } else {
+      setRetryError(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[generationId];
+        return newErrors;
+      });
+    }
   }
 
   const handleUploadButtonClick = (): void => {
@@ -402,8 +415,13 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
                       <p className="text-muted-foreground text-sm">No image generated</p>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Something went wrong while generating your headshot. You can retry now, or contact support and we’ll help you out.
+                      Something went wrong while generating your headshot. You can retry now, or contact support and we'll help you out.
                     </p>
+                    {retryError[gen.id] && (
+                      <p className="text-sm text-destructive font-medium">
+                        {retryError[gen.id]}
+                      </p>
+                    )}
                     <div className="flex gap-2">
                       <form action={handleRetry} className="flex-1">
                         <input type="hidden" name="generationId" value={gen.id} />

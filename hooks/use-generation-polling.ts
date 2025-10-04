@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 // Generation type matching the one used in the dashboard component
 export type Generation = {
@@ -9,6 +10,7 @@ export type Generation = {
 	imageUrl: string | null;
 	createdAt: number;
 	status: string;
+	retryCount?: number; // Track number of retry attempts for security
 };
 
 export type GenerationStatusResponse = {
@@ -43,6 +45,8 @@ export function useGenerationPolling(
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
+		let pollCount = 0;
+		const MAX_POLLS = 24; // 2 minutes at 5-second intervals
 
 		// Early return if no generation or not in PROCESSING state
 		if (!pendingGeneration || pendingGeneration.status !== 'PROCESSING') {
@@ -53,11 +57,42 @@ export function useGenerationPolling(
 		setPollingStatus('Uploading...');
 
 		/**
+		 * Mark generation as failed due to timeout
+		 */
+		const markGenerationAsFailed = async (reason: string): Promise<void> => {
+			try {
+				await fetch('/api/generation-status', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						generationId: pendingGeneration.id,
+						reason,
+					}),
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		};
+
+		/**
 		 * Poll the generation status API and handle state changes
 		 * @returns Whether polling should continue
 		 */
 		const pollGenerationStatus = async (): Promise<boolean> => {
 			try {
+				pollCount++;
+
+				// Check if we've exceeded the timeout
+				if (pollCount > MAX_POLLS) {
+					await markGenerationAsFailed('timeout');
+					latestStatusRef.current = 'FAILED';
+					setPollingStatus('Generation timed out. Please retry.');
+					toast.error(
+						'Generation is taking longer than expected. Please try again.',
+					);
+					return false;
+				}
+
 				// Fetch the latest status from the API
 				const response = await fetch(
 					`/api/generation-status?generationId=${pendingGeneration.id}`,
@@ -82,8 +117,10 @@ export function useGenerationPolling(
 				// Return true only if we should continue polling
 				return data.status === 'PROCESSING';
 			} catch (error) {
-				console.error('Error polling generation status:', error);
-				setPollingStatus('Error polling status. Stopping poll.');
+				setPollingStatus('Connection issue.');
+				toast.error(
+					'Unable to check your generation status. Please refresh the page.',
+				);
 				return false;
 			}
 		};

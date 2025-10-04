@@ -12,6 +12,8 @@ import {
 	getUser,
 	updateGenerationOutput,
 	updateGenerationStatus,
+	getOrderByGenerationId,
+	incrementRetryCount,
 	type GenerationStatus,
 } from '@/lib/db/queries';
 import { simpleGenerationSchema } from '../schemas/zod.schema';
@@ -50,8 +52,12 @@ const retryGenerationSchema = z.object({
 	generationId: z.number().int().positive(),
 });
 
+// Maximum number of retries allowed per generation
+const MAX_RETRIES = 3;
+
 /**
  * Server action to retry a failed generation.
+ * SECURITY: Implements multiple checks to prevent abuse and unauthorized retries.
  */
 export async function retryGeneration(formData: FormData) {
 	const rawId = formData.get('generationId');
@@ -72,6 +78,7 @@ export async function retryGeneration(formData: FormData) {
 		return { error: 'Generation not found', success: '' } as const;
 	}
 
+	// SECURITY: Verify ownership
 	if (generation.userId !== user.id) {
 		return {
 			error: 'You do not have access to this generation',
@@ -79,6 +86,41 @@ export async function retryGeneration(formData: FormData) {
 		} as const;
 	}
 
+	// SECURITY: Only allow retrying FAILED generations
+	if (generation.status !== 'FAILED') {
+		return {
+			error: 'Only failed generations can be retried',
+			success: '',
+		} as const;
+	}
+
+	// SECURITY: Check retry limit to prevent infinite retries
+	const retryCount = generation.retryCount || 0;
+	if (retryCount >= MAX_RETRIES) {
+		return {
+			error: `Maximum retry limit (${MAX_RETRIES}) reached. Please contact support.`,
+			success: '',
+		} as const;
+	}
+
+	// SECURITY: Verify there's a paid order for this generation
+	const order = await getOrderByGenerationId(parsed.data.generationId);
+	if (!order) {
+		return {
+			error: 'No payment found for this generation',
+			success: '',
+		} as const;
+	}
+
+	if (order.status !== 'succeeded') {
+		return {
+			error: 'Payment has not been completed for this generation',
+			success: '',
+		} as const;
+	}
+
+	// All security checks passed - proceed with retry
+	await incrementRetryCount(parsed.data.generationId);
 	await updateGenerationStatus(parsed.data.generationId, 'PROCESSING');
 	void generateHeadshotById(parsed.data.generationId);
 	revalidatePath('/dashboard');
@@ -88,6 +130,7 @@ export async function retryGeneration(formData: FormData) {
 export async function generateHeadshotById(generationId: number) {
 	const generation = await getGenerationById(generationId);
 	if (!generation) {
+		console.error(`Generation ${generationId} not found`);
 		return { error: 'Generation not found', success: '' };
 	}
 
@@ -99,7 +142,11 @@ export async function generateHeadshotById(generationId: number) {
 	});
 
 	if (!parsedData.success) {
-		console.error(parsedData.error);
+		console.error(
+			`Invalid generation data for ${generationId}:`,
+			parsedData.error,
+		);
+		await updateGenerationStatus(generationId, 'FAILED');
 		return { error: 'Invalid generation data in database.', success: '' };
 	}
 
@@ -128,11 +175,12 @@ export async function generateHeadshotById(generationId: number) {
 			};
 		}
 		// If we get here, generation failed but didn't throw an error
+		console.error(`Generation ${generationId} returned no URL`);
 		await updateGenerationStatus(generationId, 'FAILED');
 		return { error: 'Failed to generate headshot', success: '' };
 	} catch (error) {
 		// If an error occurs during generation, update status to FAILED
-		console.error('Error generating headshot:', error);
+		console.error(`Error generating headshot ${generationId}:`, error);
 		await updateGenerationStatus(generationId, 'FAILED');
 		return { error: 'Error during headshot generation', success: '' };
 	}

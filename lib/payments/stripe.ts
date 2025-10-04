@@ -76,32 +76,52 @@ export async function processCheckoutSession(
 	const generationId = session.metadata?.generationId;
 
 	if (!generationId) {
+		console.error('No generation ID found in session metadata.');
 		throw new Error('No generation ID found in session metadata.');
 	}
 
-	// Retrieve customer details (e.g., email) from Stripe.
-	const customer = await stripe.customers.retrieve(session.customer as string);
-	console.log('Customer:', customer);
+	try {
+		// Retrieve customer details (e.g., email) from Stripe.
+		const customer = await stripe.customers.retrieve(session.customer as string);
+		console.log('Customer:', customer);
 
-	// const downloadUrl = await trainModelAndGenerateImage({ sessionId: session.id });
-	const { success, error, imageUrl } = await generateHeadshotById(
-		Number(generationId),
-	);
+		// Generate the headshot - this already handles errors internally
+		const { success, error, imageUrl } = await generateHeadshotById(
+			Number(generationId),
+		);
 
-	if (!success) {
-		console.error(error);
-		return;
+		if (!success) {
+			console.error(
+				`Failed to generate headshot for generation ${generationId}:`,
+				error,
+			);
+			// generateHeadshotById already marks as FAILED, so just log and return
+			return;
+		}
+
+		console.log(
+			`Successfully generated headshot for generation ${generationId}:`,
+			imageUrl,
+		);
+
+		// Send an email with the download link.
+		// const email = customer && 'email' in customer ? customer.email : null;
+		// if (email) {
+		// await sendEmail({
+		//   to: email,
+		//   subject: 'Your AI-Generated Image is Ready',
+		//   text: `Thank you for your payment. Your AI-generated image is now ready. Download it here: ${downloadUrl}`,
+		// });
+		// }
+	} catch (error) {
+		console.error(
+			`Error processing checkout session for generation ${generationId}:`,
+			error,
+		);
+		// The generation status should already be marked as FAILED by generateHeadshotById
+		// But we re-throw to ensure the webhook knows something went wrong
+		throw error;
 	}
-
-	// Send an email with the download link.
-	// const email = customer && 'email' in customer ? customer.email : null;
-	// if (email) {
-	// await sendEmail({
-	//   to: email,
-	//   subject: 'Your AI-Generated Image is Ready',
-	//   text: `Thank you for your payment. Your AI-generated image is now ready. Download it here: ${downloadUrl}`,
-	// });
-	// }
 }
 
 export async function getStripePrices() {

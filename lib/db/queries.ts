@@ -137,6 +137,7 @@ export async function getGenerations(options?: { onlyComplete?: boolean }) {
 			imageUrl: generations.imageUrl,
 			status: generations.status,
 			createdAt: generations.createdAt,
+			retryCount: generations.retryCount,
 		})
 		.from(generations)
 		.where(and(...conditions))
@@ -267,4 +268,32 @@ export async function updateOrderPaymentStatus(params: {
 		.where(eq(orders.id, params.orderId))
 		.returning()
 		.get();
+}
+
+/**
+ * Get order associated with a generation ID
+ */
+export async function getOrderByGenerationId(generationId: number) {
+	return await db
+		.select()
+		.from(orders)
+		.where(eq(orders.generationId, generationId))
+		.get();
+}
+
+/**
+ * Increment the retry count for a generation
+ */
+export async function incrementRetryCount(generationId: number) {
+	const generation = await getGenerationById(generationId);
+	if (!generation) {
+		throw new Error('Generation not found');
+	}
+
+	await db
+		.update(generations)
+		.set({
+			retryCount: (generation.retryCount || 0) + 1,
+		})
+		.where(eq(generations.id, generationId));
 }

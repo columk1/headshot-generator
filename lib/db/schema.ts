@@ -48,6 +48,7 @@ export const generations = sqliteTable('generations', {
 	inputImageUrl: text('input_image_url').notNull(),
 	status: text('status').notNull().default('PENDING_PAYMENT'),
 	imageUrl: text('image_url'), // Where the generated headshot is stored
+	retryCount: integer('retry_count').notNull().default(0), // Track number of retries for security
 	createdAt: integer('created_at')
 		.notNull()
 		.default(sql`(cast(unixepoch() as int))`),
