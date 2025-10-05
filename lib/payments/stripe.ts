@@ -14,6 +14,24 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
 	apiVersion: '2025-08-27.basil',
 });
 
+/**
+ * Resolve a lookup_key to a Stripe price ID
+ * This allows us to use stable identifiers instead of hardcoded IDs
+ */
+export async function resolvePriceLookupKey(lookupKey: string): Promise<string> {
+	const prices = await stripe.prices.list({
+		lookup_keys: [lookupKey],
+		limit: 1,
+		active: true,
+	});
+
+	if (prices.data.length === 0) {
+		throw new Error(`No active price found for lookup_key: ${lookupKey}`);
+	}
+
+	return prices.data[0].id;
+}
+
 export async function createCheckoutSession({
 	priceId,
 	generationId,

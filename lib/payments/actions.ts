@@ -1,14 +1,18 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createCheckoutSession } from './stripe';
+import { createCheckoutSession, resolvePriceLookupKey } from './stripe';
 import { createGeneration } from '@/lib/db/queries';
 import { validatedActionWithUser } from '@/lib/auth/middleware';
 import { processOrderSchema } from '@/lib/schemas/zod.schema';
 import { rethrowIfRedirectError } from '@/lib/utils';
 
-const PRICE_IDS = {
-	headshotBasic: 'price_1RXz5mBFIgkt6SiyXJ9VW9Eu',
+/**
+ * Lookup keys for Stripe prices
+ * These are stable identifiers - no hardcoded price IDs needed!
+ */
+const PRICE_LOOKUP_KEYS = {
+	headshotBasic: 'headshot_basic',
 } as const;
 
 export const checkoutAction = async (formData: FormData) => {
@@ -21,7 +25,7 @@ export const processGenerationOrder = validatedActionWithUser(
 	processOrderSchema,
 	async (data, user) => {
 		const { inputImageUrl, gender, background, product } = data;
-		const priceId = PRICE_IDS[product];
+		const lookupKey = PRICE_LOOKUP_KEYS[product];
 
 		let generationId: number;
 
@@ -50,6 +54,9 @@ export const processGenerationOrder = validatedActionWithUser(
 		}
 
 		try {
+			// Resolve the lookup key to an actual Stripe price ID
+			const priceId = await resolvePriceLookupKey(lookupKey);
+			
 			await createCheckoutSession({
 				priceId,
 				generationId: generationId.toString(),
