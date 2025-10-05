@@ -122,6 +122,14 @@ export async function retryGeneration(formData: FormData) {
 	// All security checks passed - proceed with retry
 	await incrementRetryCount(parsed.data.generationId);
 	await updateGenerationStatus(parsed.data.generationId, 'PROCESSING');
+	
+	console.log('[Retry] Starting retry for generation:', {
+		generationId: parsed.data.generationId,
+		userId: user.id,
+		retryCount: retryCount + 1,
+		orderId: order.id,
+	});
+	
 	void generateHeadshotById(parsed.data.generationId);
 	revalidatePath('/dashboard');
 	return { error: '', success: 'Retry started' } as const;

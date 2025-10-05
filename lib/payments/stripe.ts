@@ -61,6 +61,15 @@ export async function createCheckoutSession({
 		},
 	});
 
+	console.log('[Stripe Checkout] ✓ Session created:', {
+		sessionId: session.id,
+		userId: user.id,
+		generationId,
+		priceId,
+		stripeCustomerId,
+		amount: session.amount_total,
+	});
+
 	if (!session.url) {
 		throw new Error('Stripe checkout did not return a URL');
 	}
@@ -72,18 +81,35 @@ export async function processCheckoutSession(
 	stripe: Stripe,
 	session: Stripe.Checkout.Session,
 ) {
-	console.log('Processing checkout session');
+	console.log('[Stripe Process] Processing checkout session:', {
+		sessionId: session.id,
+		paymentStatus: session.payment_status,
+	});
 	const generationId = session.metadata?.generationId;
 
 	if (!generationId) {
-		console.error('No generation ID found in session metadata.');
+		console.error(
+			'[Stripe Process] No generation ID found in session metadata:',
+			{
+				sessionId: session.id,
+			},
+		);
 		throw new Error('No generation ID found in session metadata.');
 	}
 
 	try {
 		// Retrieve customer details (e.g., email) from Stripe.
-		const customer = await stripe.customers.retrieve(session.customer as string);
-		console.log('Customer:', customer);
+		const customer = await stripe.customers.retrieve(
+			session.customer as string,
+		);
+		const customerEmail =
+			customer && 'email' in customer ? customer.email : null;
+		console.log('[Stripe Process] Customer retrieved:', {
+			customerId: session.customer,
+			email: customerEmail,
+			generationId,
+		});
+		// const downloadUrl = await trainModelAndGenerateImage({ sessionId: session.id });
 
 		// Generate the headshot - this already handles errors internally
 		const { success, error, imageUrl } = await generateHeadshotById(
@@ -91,18 +117,18 @@ export async function processCheckoutSession(
 		);
 
 		if (!success) {
-			console.error(
-				`Failed to generate headshot for generation ${generationId}:`,
+			console.error('[Stripe Process] Failed to generate headshot:', {
+				generationId,
 				error,
-			);
+			});
 			// generateHeadshotById already marks as FAILED, so just log and return
 			return;
 		}
 
-		console.log(
-			`Successfully generated headshot for generation ${generationId}:`,
+		console.log('[Stripe Process] Successfully generated headshot:', {
+			generationId,
 			imageUrl,
-		);
+		});
 
 		// Send an email with the download link.
 		// const email = customer && 'email' in customer ? customer.email : null;
@@ -114,12 +140,11 @@ export async function processCheckoutSession(
 		// });
 		// }
 	} catch (error) {
-		console.error(
-			`Error processing checkout session for generation ${generationId}:`,
+		console.error('[Stripe Process] Error processing checkout session:', {
+			generationId,
 			error,
-		);
-		// The generation status should already be marked as FAILED by generateHeadshotById
-		// But we re-throw to ensure the webhook knows something went wrong
+		});
+		// We re-throw to ensure the webhook knows something went wrong
 		throw error;
 	}
 }

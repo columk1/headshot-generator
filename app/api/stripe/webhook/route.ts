@@ -26,6 +26,8 @@ export async function POST(request: NextRequest) {
 		);
 	}
 
+	console.log(`[Stripe Webhook] Received event: ${event.type} (ID: ${event.id})`);
+
 	switch (event.type) {
 		case 'checkout.session.completed': {
 			const session = event.data.object satisfies Stripe.Checkout.Session;
@@ -35,8 +37,18 @@ export async function POST(request: NextRequest) {
 					? session.payment_intent
 					: session.payment_intent?.id;
 
+			console.log('[Stripe Webhook] Checkout session completed:', {
+				sessionId: session.id,
+				paymentIntentId,
+				amount: session.amount_total,
+				currency: session.currency,
+				customer: session.customer,
+				generationId: session.metadata?.generationId,
+				userId: session.client_reference_id,
+			});
+
 			if (!paymentIntentId) {
-				console.error('Missing PaymentIntent ID on session.');
+				console.error('[Stripe Webhook] Missing PaymentIntent ID on session:', session.id);
 				break;
 			}
 			try {
@@ -59,8 +71,8 @@ export async function POST(request: NextRequest) {
 
 					if (!userId || !generationId) {
 						console.error(
-							'Webhook Error: Missing userId or generationId in session data for session ID:',
-							session.id,
+							'[Stripe Webhook] Missing userId or generationId in session data:',
+							{ sessionId: session.id, userId, generationId },
 						);
 						break;
 					}
@@ -72,6 +84,14 @@ export async function POST(request: NextRequest) {
 						amountPaid: session.amount_total,
 						status: 'paid',
 					});
+
+					console.log('[Stripe Webhook] ✓ Order created:', {
+						orderId: order.id,
+						generationId,
+						userId,
+						paymentIntentId,
+						amountPaid: session.amount_total,
+					});
 				} else if (order.status !== 'paid') {
 					// Order existed but wasn't marked as paid, so update it.
 					await updateOrderPaymentStatus({
@@ -80,19 +100,37 @@ export async function POST(request: NextRequest) {
 						amountPaid: session.amount_total,
 						updatedAt: Math.floor(Date.now() / 1000),
 					});
+
+					console.log('[Stripe Webhook] ✓ Order updated:', {
+						orderId: order.id,
+						paymentIntentId,
+						previousStatus: order.status,
+						newStatus: 'paid',
+					});
+				} else {
+					console.log('[Stripe Webhook] Order already paid:', {
+						orderId: order.id,
+						paymentIntentId,
+					});
 				}
 			} catch (error) {
-				console.error('Error processing checkout session:', error);
+				console.error('[Stripe Webhook] Error processing checkout session:', {
+					sessionId: session.id,
+					paymentIntentId,
+					error,
+				});
 			}
 			// generate image after the response has been sent
 			after(async () => {
 				try {
+					console.log('[Stripe Webhook] Starting image generation for session:', session.id);
 					await processCheckoutSession(stripe, session);
 					revalidatePath('/dashboard');
+					console.log('[Stripe Webhook] ✓ Image generation completed for session:', session.id);
 				} catch (error) {
 					console.error(
-						'Error in after() during image generation:',
-						error,
+						'[Stripe Webhook] Error in after() during image generation:',
+						{ sessionId: session.id, error },
 					);
 					// Error is logged but generation should already be marked as FAILED
 					// by the internal error handling in processCheckoutSession/generateHeadshotById
@@ -101,7 +139,7 @@ export async function POST(request: NextRequest) {
 			break;
 		}
 		default:
-			console.log(`Unhandled event type ${event.type}`);
+			console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
 	}
 
 	return NextResponse.json({ received: true });

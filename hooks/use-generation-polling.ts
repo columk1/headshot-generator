@@ -10,7 +10,7 @@ export type Generation = {
 	imageUrl: string | null;
 	createdAt: number;
 	status: string;
-	retryCount?: number; // Track number of retry attempts for security
+	retryCount?: number;
 };
 
 export type GenerationStatusResponse = {
