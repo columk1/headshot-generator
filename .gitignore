@@ -40,3 +40,6 @@ next-env.d.ts
 
 # Docker
 postgres_data/
+
+# Sandbox
+/sandbox/
