@@ -116,8 +116,8 @@ function Header() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  // Only show navigation on the landing page, not in the dashboard
-  const showNavigation = !pathname.startsWith('/dashboard');
+  // Only show navigation on the homepage
+  const showNavigation = pathname === '/';
 
   return (
     <header
