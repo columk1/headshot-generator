@@ -43,18 +43,18 @@ export default function AccountPage() {
   };
 
   return (
-    <section className="flex-1 p-4 lg:p-8">
+    <section className="flex-1 p-4 lg:p-8 max-w-3xl m-auto">
       <h1 className="text-lg lg:text-2xl font-medium bold text-primary-text mb-6">
         Account
       </h1>
-      <Card className="mb-8">
+      <Card className="mb-8 border-border shadow-lg bg-gradient-to-br from-background to-muted/40 backdrop-blur">
         <CardHeader>
           <CardTitle>Password</CardTitle>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handlePasswordSubmit}>
-            <div>
-              <Label htmlFor="current-password">Current Password</Label>
+            <div className="space-y-2">
+              <Label htmlFor="current-password" className="block">Current Password</Label>
               <Input
                 id="current-password"
                 name="currentPassword"
@@ -65,8 +65,8 @@ export default function AccountPage() {
                 maxLength={100}
               />
             </div>
-            <div>
-              <Label htmlFor="new-password">New Password</Label>
+            <div className="space-y-2">
+              <Label htmlFor="new-password" className="block">New Password</Label>
               <Input
                 id="new-password"
                 name="newPassword"
@@ -77,8 +77,8 @@ export default function AccountPage() {
                 maxLength={100}
               />
             </div>
-            <div>
-              <Label htmlFor="confirm-password">Confirm New Password</Label>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password" className="block">Confirm New Password</Label>
               <Input
                 id="confirm-password"
                 name="confirmPassword"
@@ -96,7 +96,7 @@ export default function AccountPage() {
             )}
             <Button
               type="submit"
-              className="bg-orange-500 hover:bg-orange-600 text-white"
+              className="w-full rounded-full"
               disabled={isPasswordPending}
             >
               {isPasswordPending ? (
@@ -115,17 +115,17 @@ export default function AccountPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-border shadow-lg bg-gradient-to-br from-background to-muted/40 backdrop-blur">
         <CardHeader>
           <CardTitle>Delete Account</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Account deletion is non-reversable. Please proceed with caution.
           </p>
           <form onSubmit={handleDeleteSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="delete-password">Confirm Password</Label>
+            <div className="space-y-2">
+              <Label htmlFor="delete-password" className="block">Confirm Password</Label>
               <Input
                 id="delete-password"
                 name="password"
@@ -141,7 +141,7 @@ export default function AccountPage() {
             <Button
               type="submit"
               variant="destructive"
-              className="bg-red-600 hover:bg-red-700"
+              className="w-full rounded-full"
               disabled={isDeletePending}
             >
               {isDeletePending ? (
