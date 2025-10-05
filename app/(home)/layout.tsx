@@ -215,10 +215,7 @@ function Footer() {
   return (
     <footer className="w-full bg-background/95 backdrop-blur-sm">
       <div className="container flex flex-col gap-8 px-4 py-8 md:px-6 lg:py-12 m-auto">
-        <div className="flex gap-4 justify-between border-t border-border/40 pt-8">
-          <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} BizPortraits. All rights reserved.
-          </p>
+        <div className="flex flex-col items-center gap-4 border-t border-border/40 pt-8">
           <ul className="flex gap-4 text-xs">
             <li>
               <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -231,6 +228,9 @@ function Footer() {
               </Link>
             </li>
           </ul>
+          <p className="text-xs text-muted-foreground text-center">
+            &copy; {new Date().getFullYear()} BizPortraits. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
