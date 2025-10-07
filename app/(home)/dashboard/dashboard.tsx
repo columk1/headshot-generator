@@ -35,7 +35,7 @@ const backgroundOptions = [
 ];
 
 const defaultGender = 'male';
-const defaultBackground = 'neutral';
+const defaultBackground = 'white';
 
 type GenerationState = ActionState & {
   imageUrl?: string;
@@ -70,7 +70,7 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
   async function handleRetry(formData: FormData): Promise<void> {
     const result = await retryGeneration(formData);
     const generationId = Number(formData.get('generationId'));
-    
+
     if (result.error) {
       setRetryError(prev => ({ ...prev, [generationId]: result.error }));
     } else {
@@ -403,7 +403,7 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
             <h3 className="text-lg font-medium mb-3">Failed generations</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {failedGenerations.map((gen) => (
-                <Card key={`failed-${gen.id}`} className="border-destructive/30">
+                <Card key={`failed-${gen.id}`} className="border-destructive/60">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base flex items-center gap-2 text-destructive">
                       <AlertTriangle className="size-4" />
