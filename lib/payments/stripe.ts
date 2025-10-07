@@ -18,7 +18,9 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
  * Resolve a lookup_key to a Stripe price ID
  * This allows us to use stable identifiers instead of hardcoded IDs
  */
-export async function resolvePriceLookupKey(lookupKey: string): Promise<string> {
+export async function resolvePriceLookupKey(
+	lookupKey: string,
+): Promise<string> {
 	const prices = await stripe.prices.list({
 		lookup_keys: [lookupKey],
 		limit: 1,
@@ -70,7 +72,7 @@ export async function createCheckoutSession({
 		],
 		mode: 'payment',
 		success_url: `${baseUrl}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
-		cancel_url: `${baseUrl}/generate?generationId=${generationId}`,
+		cancel_url: `${baseUrl}/dashboard?generationId=${generationId}`,
 		customer: stripeCustomerId,
 		client_reference_id: user.id.toString(),
 		allow_promotion_codes: true,
