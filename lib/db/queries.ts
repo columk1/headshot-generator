@@ -149,7 +149,7 @@ export async function getGenerations(options?: { onlyComplete?: boolean }) {
 export async function createOrder(data: {
 	userId: number;
 	generationId: number;
-	stripePaymentIntentId: string;
+	stripePaymentIntentId: string | null;
 	amountPaid: number;
 	status: string; // Added status parameter
 }) {

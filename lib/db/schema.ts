@@ -63,7 +63,7 @@ export const orders = sqliteTable('orders', {
 	generationId: integer('generation_id')
 		.notNull()
 		.references(() => generations.id),
-	stripePaymentIntentId: text('stripe_payment_intent_id').notNull(),
+	stripePaymentIntentId: text('stripe_payment_intent_id'),
 	amountPaid: integer('amount_paid').notNull(), // e.g. in cents
 	status: text('status').notNull().default('pending'),
 	createdAt: integer('created_at')
@@ -151,6 +151,10 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
+export type Order = typeof orders.$inferSelect;
+export type NewOrder = typeof orders.$inferInsert;
+export type Generation = typeof generations.$inferSelect;
+export type NewGeneration = typeof generations.$inferInsert;
 
 // export type TeamDataWithMembers = Team & {
 // 	teamMembers: (TeamMember & {

@@ -7,6 +7,7 @@ import {
 	updateOrderPaymentStatus,
 } from '@/lib/db/queries';
 import { revalidatePath } from 'next/cache';
+import type { Order } from '@/lib/db/schema';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? '';
 
@@ -26,7 +27,9 @@ export async function POST(request: NextRequest) {
 		);
 	}
 
-	console.log(`[Stripe Webhook] Received event: ${event.type} (ID: ${event.id})`);
+	console.log(
+		`[Stripe Webhook] Received event: ${event.type} (ID: ${event.id})`,
+	);
 
 	switch (event.type) {
 		case 'checkout.session.completed': {
@@ -37,67 +40,56 @@ export async function POST(request: NextRequest) {
 					? session.payment_intent
 					: session.payment_intent?.id;
 
+			const amountPaid = session.amount_total ?? 0;
+			const userId = Number(session.client_reference_id);
+			const generationId = Number(session.metadata?.generationId);
+
 			console.log('[Stripe Webhook] Checkout session completed:', {
 				sessionId: session.id,
 				paymentIntentId,
 				amount: session.amount_total,
 				currency: session.currency,
 				customer: session.customer,
-				generationId: session.metadata?.generationId,
-				userId: session.client_reference_id,
+				generationId,
+				userId,
 			});
 
-			if (!paymentIntentId) {
-				console.error('[Stripe Webhook] Missing PaymentIntent ID on session:', session.id);
+			if (!userId || !generationId) {
+				console.error(
+					'[Stripe Webhook] Missing userId or generationId in session data:',
+					{ sessionId: session.id, userId, generationId },
+				);
 				break;
 			}
+
 			try {
-				// Check if order already exists to handle retries
-				// Validate amount_total once upfront
-				if (session.amount_total === null) {
-					console.error(
-						'Webhook Error: session.amount_total is null. Cannot process order for session ID:',
-						session.id,
-					);
-					break;
+				let order: Order | undefined;
+				if (paymentIntentId) {
+					// Paid order: check if it already exists
+					order = await getOrderByPaymentIntentId(paymentIntentId);
 				}
-
-				let order = await getOrderByPaymentIntentId(paymentIntentId);
-
 				if (!order) {
-					// Order doesn't exist, so create it.
-					const userId = Number(session.client_reference_id);
-					const generationId = Number(session.metadata?.generationId);
-
-					if (!userId || !generationId) {
-						console.error(
-							'[Stripe Webhook] Missing userId or generationId in session data:',
-							{ sessionId: session.id, userId, generationId },
-						);
-						break;
-					}
-
+					// Create order for both free and paid
 					order = await createOrder({
 						userId,
 						generationId,
-						stripePaymentIntentId: paymentIntentId,
-						amountPaid: session.amount_total,
+						stripePaymentIntentId: paymentIntentId ?? null,
+						amountPaid,
 						status: 'paid',
 					});
-
 					console.log('[Stripe Webhook] ✓ Order created:', {
 						orderId: order.id,
 						generationId,
 						userId,
 						paymentIntentId,
-						amountPaid: session.amount_total,
+						amountPaid,
 					});
-				} else if (order.status !== 'paid') {
-					// Order existed but wasn't marked as paid, so update it.
+				} else if (amountPaid > 0 && order.status !== 'paid') {
+					// Update paid order if needed
 					await updateOrderPaymentStatus({
 						orderId: order.id,
 						status: 'paid',
-						amountPaid: session.amount_total,
+						amountPaid,
 						updatedAt: Math.floor(Date.now() / 1000),
 					});
 
@@ -108,7 +100,7 @@ export async function POST(request: NextRequest) {
 						newStatus: 'paid',
 					});
 				} else {
-					console.log('[Stripe Webhook] Order already paid:', {
+					console.log('[Stripe Webhook] Order already exists:', {
 						orderId: order.id,
 						paymentIntentId,
 					});
@@ -123,10 +115,16 @@ export async function POST(request: NextRequest) {
 			// generate image after the response has been sent
 			after(async () => {
 				try {
-					console.log('[Stripe Webhook] Starting image generation for session:', session.id);
+					console.log(
+						'[Stripe Webhook] Starting image generation for session:',
+						session.id,
+					);
 					await processCheckoutSession(stripe, session);
 					revalidatePath('/dashboard');
-					console.log('[Stripe Webhook] ✓ Image generation completed for session:', session.id);
+					console.log(
+						'[Stripe Webhook] ✓ Image generation completed for session:',
+						session.id,
+					);
 				} catch (error) {
 					console.error(
 						'[Stripe Webhook] Error in after() during image generation:',

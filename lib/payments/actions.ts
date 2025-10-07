@@ -8,8 +8,7 @@ import { processOrderSchema } from '@/lib/schemas/zod.schema';
 import { rethrowIfRedirectError } from '@/lib/utils';
 
 /**
- * Lookup keys for Stripe prices
- * These are stable identifiers - no hardcoded price IDs needed!
+ * Lookup keys for Stripe prices - These are stable identifiers
  */
 const PRICE_LOOKUP_KEYS = {
 	headshotBasic: 'headshot_basic',
@@ -56,7 +55,7 @@ export const processGenerationOrder = validatedActionWithUser(
 		try {
 			// Resolve the lookup key to an actual Stripe price ID
 			const priceId = await resolvePriceLookupKey(lookupKey);
-			
+
 			await createCheckoutSession({
 				priceId,
 				generationId: generationId.toString(),
