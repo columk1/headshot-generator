@@ -94,7 +94,7 @@ function UserMenu() {
 function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
@@ -113,7 +113,7 @@ function Header() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   // Only show navigation on the homepage
@@ -167,7 +167,7 @@ function Header() {
         <div className="flex items-center space-x-4">
           {mounted && (
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
-              {theme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
+              {resolvedTheme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
               <span className="sr-only">Toggle theme</span>
             </Button>
           )}
