@@ -93,10 +93,10 @@ export default function LandingPage() {
     <div className="flex flex-col">
       <main className="flex-1 m-auto">
         {/* Hero Section */}
-        <section className="w-full py-20 md:pt-32 overflow-hidden">
+        <section className="w-full py-20 md:pt-28 overflow-hidden">
           <div className="container px-4 md:px-6 relative">
             {/* Grid lines background */}
-            <div className="absolute -mt-10 inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+            <div className="absolute -mt-10 inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_35%_at_50%_35%,#000_70%,transparent_110%)]" />
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -151,7 +151,7 @@ export default function LandingPage() {
                 <div className="rounded-xl shadow-2xl p-2 border border-border/40 bg-gradient-to-b from-background to-muted/20">
                   {/* <BeforeAfter beforeImage="https://www.shutterstock.com/image-photo/handsome-caucasican-guy-taking-selfie-600nw-1802109742.jpg" afterImage="https://tinyurl.com/2vube5ps" /> */}
                   <Carousel
-                    plugins={[Autoplay({ delay: 3000, stopOnMouseEnter: true }), Fade()]}
+                    plugins={[Autoplay({ delay: 3000, stopOnMouseEnter: true, stopOnInteraction: true, stopOnFocusIn: true, }), Fade()]}
                   >
                     <CarouselContent>
                       <CarouselItem><BeforeAfter beforeImage="images/ba-01a.jpg" afterImage="images/ba-01b.jpg" /></CarouselItem>
@@ -261,8 +261,6 @@ export default function LandingPage() {
             </motion.div>
 
             <div className="grid md:grid-cols-3 gap-8 md:gap-12 relative">
-              <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2 z-0" />
-
               {[
                 {
                   step: "01",
