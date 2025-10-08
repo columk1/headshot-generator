@@ -11,7 +11,7 @@
 
 <!-- ABOUT THE PROJECT -->
 
-[![Home Page Screenshot][home-screenshot]](https://bizportraits.com)
+[![Landing Page Screenshot][landing-page-screenshot]](https://bizportraits.com)
 
 ## About The Project
 
@@ -106,4 +106,4 @@ Website: [columkelly.com](https://columkelly.com)
 
 Live Project Link: [bizportraits.com](https://bizportraits.com)
 
-[home-screenshot]: ./public/images/home-screenshot.webp
+[landing-page-screenshot]: ./docs/assets/landing-page.webp
