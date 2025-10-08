@@ -4,7 +4,6 @@ import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react"
-import type { AutoplayType } from "embla-carousel-autoplay"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -14,13 +13,6 @@ type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 type CarouselOptions = UseCarouselParameters[0]
 type CarouselPlugin = UseCarouselParameters[1]
-
-// Extended API type that includes plugin methods
-type CarouselApiWithPlugins = CarouselApi & {
-  plugins?: () => {
-    autoplay?: AutoplayType
-  }
-}
 
 type CarouselProps = {
   opts?: CarouselOptions
@@ -184,15 +176,7 @@ function CarouselPrevious({
   size = "icon",
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { orientation, scrollPrev, canScrollPrev, api } = useCarousel()
-
-  const handleClick = () => {
-    scrollPrev()
-    const autoplay = api?.plugins?.()?.autoplay
-    if (autoplay) {
-      autoplay.stop()
-    }
-  }
+  const { orientation, scrollPrev, canScrollPrev } = useCarousel()
 
   return (
     <Button
@@ -207,7 +191,7 @@ function CarouselPrevious({
         className
       )}
       disabled={!canScrollPrev}
-      onClick={handleClick}
+      onClick={scrollPrev}
       {...props}
     >
       <ArrowLeft />
@@ -222,14 +206,9 @@ function CarouselNext({
   size = "icon",
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { orientation, scrollNext, canScrollNext, api } = useCarousel()
-
-  const handleClick = () => {
+  const { orientation, scrollNext, canScrollNext } = useCarousel()
+  const onInteraction = () => {
     scrollNext()
-    const autoplay = api?.plugins?.()?.autoplay
-    if (autoplay) {
-      autoplay.stop()
-    }
   }
 
   return (
@@ -245,7 +224,7 @@ function CarouselNext({
         className
       )}
       disabled={!canScrollNext}
-      onClick={handleClick}
+      onClick={scrollNext}
       {...props}
     >
       <ArrowRight />

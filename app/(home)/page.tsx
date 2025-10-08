@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
@@ -35,6 +35,9 @@ import { Logo } from "@/components/ui/logo"
 export default function LandingPage() {
   // State for UI animations and interactions
   const [activeTab, setActiveTab] = useState(0)
+
+  const carouselAutoplayPlugin = useRef(Autoplay({ delay: 3000 }))
+  const carouselFadePlugin = useRef(Fade())
 
   const container = {
     hidden: { opacity: 0 },
@@ -151,7 +154,9 @@ export default function LandingPage() {
                 <div className="rounded-xl shadow-2xl p-2 border border-border/40 bg-gradient-to-b from-background to-muted/20">
                   {/* <BeforeAfter beforeImage="https://www.shutterstock.com/image-photo/handsome-caucasican-guy-taking-selfie-600nw-1802109742.jpg" afterImage="https://tinyurl.com/2vube5ps" /> */}
                   <Carousel
-                    plugins={[Autoplay({ delay: 3000, stopOnMouseEnter: true, stopOnInteraction: true, stopOnFocusIn: true, }), Fade()]}
+                    plugins={[carouselAutoplayPlugin.current, carouselFadePlugin.current]}
+                    onMouseEnter={carouselAutoplayPlugin.current.stop}
+                    onMouseLeave={carouselAutoplayPlugin.current.reset}
                   >
                     <CarouselContent>
                       <CarouselItem><BeforeAfter beforeImage="images/ba-01a.jpg" afterImage="images/ba-01b.jpg" /></CarouselItem>
