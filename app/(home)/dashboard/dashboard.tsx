@@ -50,7 +50,6 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
   const [imageUrl, setImageUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const [formOpen, setFormOpen] = useState(generations.length === 0 ? "1" : "");
-  const [selectedBackground, setSelectedBackground] = useState(defaultBackground);
 
   const [generateState, generateAction, isGeneratePending] = useActionState<
     GenerationState,
@@ -264,8 +263,8 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
                       <div className="space-y-3">
                         <Label className="text-sm font-medium block mb-2">Background Style</Label>
                         <RadioGroup
-                          value={selectedBackground}
-                          onValueChange={setSelectedBackground}
+                          name="background"
+                          defaultValue={defaultBackground}
                           className="grid grid-cols-4 gap-3 w-full"
                         >
                           {backgroundOptions.map((option) => (
@@ -297,7 +296,6 @@ export function Dashboard({ generations, pendingGeneration }: { generations: Gen
                             </div>
                           ))}
                         </RadioGroup>
-                        <Input type="hidden" name="background" value={selectedBackground} />
                       </div>
                       <Input type="hidden" name="product" value="headshotBasic" />
 
