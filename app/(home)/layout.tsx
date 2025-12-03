@@ -229,7 +229,7 @@ function Footer() {
             </li>
           </ul>
           <p className="text-xs text-muted-foreground text-center">
-            &copy; {new Date().getFullYear()} BizPortraits. All rights reserved.
+            &copy; 2025 BizPortraits. All rights reserved.
           </p>
         </div>
       </div>

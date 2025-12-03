@@ -14,7 +14,7 @@ export default function StepOptions() {
   const [ethnicity, setEthnicity] = useState<string>("")
   const [bodyType, setBodyType] = useState<string>("")
   const [attire, setAttire] = useState<string>("")
-  const [background, setBackground] = useState<string>("")
+  const [background, setBackground] = useState<string>("White")
 
   const OptionButton = ({
     value,

@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
 		],
 	},
 	experimental: {
-		ppr: true,
+		// cacheComponents: true,
 	},
 };
 
